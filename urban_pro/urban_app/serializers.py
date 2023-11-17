@@ -26,7 +26,7 @@ class process_updateSerializer(serializers.ModelSerializer):
     class Meta:
         model = process_update
         # fields ="__all__"
-        fields =["manufacture_model_name","process_name","start_date","end_date","time","issues","status"]
+        fields =["manufacture_id","process_id","manufacture_model_name","process_name","start_date","end_date","time","issues","status"]
 
 
 

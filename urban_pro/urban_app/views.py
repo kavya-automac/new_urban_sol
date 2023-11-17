@@ -49,60 +49,67 @@ def list_of_processes(request):
 
         for process in list_no_processes :
             print('process',process)
+
             print(list_no_processes.index(process))
             process_index = list_no_processes.index(process)
 
-
+            # global process_data
             for process_data in entire_data_serializer_data:
+
                 print('proces',process['process_id__process_name'])
-                if process['process_id__process_name'] not in entire_data_serializer_data:
-                    result_data_4 = {
-                        "process_status": "Not Started",
-                        "process_name": process['process_id__process_name'],
-                        # "Issue": process_data["Issue Raised"],
-
-                    }
-                    result.append(result_data_4)
-
-                # if process_data["process_name"] == process['process_id__process_name']:
-                else:
+                if process['process_id__process_name'] == process_data['process_name']:
                     if process_data["status"] == "Completed":
-                        result_data_1={
-                            "process_status" : process_data["status"],
-                            "process_name" : process_data["process_name"],
-                            "start_date":process_data["start_date"],
-                            "completed_date":process_data["end_date"],
-                            "time":process_data["time"]
+                        result_data_1 = {
+                            # "m_id": process_data["manufacture_id"],
+                            # "p_id": process_data["process_id"],
+                            "process_status": process_data["status"],
+                            "process_name": process_data["process_name"],
+                            "start_date": process_data["start_date"],
+                            "completed_date": process_data["end_date"],
+                            "time": process_data["time"]
                         }
                         result.append(result_data_1)
-                        # list_no_processes[process_index]=result_data_1
-
-
+                        list_no_processes[process_index] = result_data_1
+                        break
                     if process_data["status"] == "On Going":
                         result_data_2 = {
+                            # "m_id":process_data["manufacture_id"],
+                            # "p_id" :process_data["process_id"],
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
                             "start_date": process_data["start_date"],
                             "time": process_data["time"]
                         }
                         result.append(result_data_2)
-                        # list_no_processes[process_index] = result_data_2
-
-
-
+                        list_no_processes[process_index] = result_data_2
+                        break
                     if process_data["status"] == "Issue Raised":
                         result_data_3 = {
+                            # "m_id": process_data["manufacture_id"],
+                            # "p_id": process_data["process_id"],
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
                             "Issue": process_data["Issue Raised"],
 
                         }
                         result.append(result_data_3)
-                        # list_no_processes[process_index] = result_data_3
+                        list_no_processes[process_index] = result_data_3
+                        break
+            else:
+                result_data_4 = {
+                    # "m_id": process_data["manufacture_id"],
+                    # "p_id": process_data["process_id"],
+                    "process_status": "Not Started",
+                    "process_name": process['process_id__process_name'],
+                    # "Issue": process_data["Issue Raised"],
 
+                }
+                result.append(result_data_4)
+                print('resultttt', result)
+                list_no_processes[process_index] = result_data_4
 
-
-            return JsonResponse({"data":result})
+        print('resultttt222', result)
+        return JsonResponse({"data":result})
 
 
 
