@@ -211,12 +211,14 @@ def about_process(request):
     if "process_id" in request.GET and "module" in request.GET:
         module = request.GET["module"]
         process_id = request.query_params.get('process_id')
-        process_data=Process_Details.objects.get(process_name=process_id)
+        manufacture_id = request.query_params.get('manufacture_id')
+
+        process_data=Process_Details.objects.get(pk=process_id)
         process_data_serilaizer=all_Process_DetailsSerializer(process_data)
         process_data_serilaizer_data=process_data_serilaizer.data
         print('process_data_serilaizer_data',process_data_serilaizer_data)
 
-        updated_data=process_update.objects.get(process_id__process_name=process_id)
+        updated_data=process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
         print('start_date',updated_data.start_date)
         print('end_date',updated_data.end_date)
         print('status',updated_data.status)

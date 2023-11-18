@@ -10,7 +10,7 @@ class Process_Details(models.Model):
     objects = models.Manager()
     # process_id = models.ForeignKey(process_update,on_delete=models.CASCADE)
     description=models.TextField()
-    image=models.ImageField(upload_to='images',blank=True)
+    image=models.ImageField(upload_to='media',blank=True)
     process_type=models.CharField(max_length=200)
     process_name=models.CharField(max_length=200)
 
