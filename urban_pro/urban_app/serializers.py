@@ -39,3 +39,29 @@ class only_processSerializer(serializers.ModelSerializer):
         model = process_update
 
         fields =["process_name"]
+
+
+class start_processSerializer(serializers.ModelSerializer):
+
+    # Include fields from the related process_id model
+    # process_name = serializers.CharField(source='process_id.process_name', read_only=True)
+    # manufacture_id = serializers.CharField(source='manufacture_id.manufacture_No', read_only=True)
+
+
+    class Meta:
+        model = process_update
+
+        fields =["manufacture_id","process_id","start_date","status"]
+
+
+class stop_processSerializer(serializers.ModelSerializer):
+
+    # Include fields from the related process_id model
+    # process_name = serializers.CharField(source='process_id.process_name', read_only=True)
+    # manufacture_id = serializers.CharField(source='manufacture_id.manufacture_No', read_only=True)
+
+
+    class Meta:
+        model = process_update
+
+        fields =["manufacture_id","process_id","start_date","end_date","time","issues","status"]

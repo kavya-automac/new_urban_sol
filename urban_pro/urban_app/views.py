@@ -74,7 +74,8 @@ def list_of_processes(request):
                             "process_name": process_data["process_name"],
                             "start_date": process_data["start_date"],
                             "completed_date": process_data["end_date"],
-                            "time": process_data["time"]
+                            "time": process_data["time"],
+                            'issue_raised':process_data["issues"]
                         }
                         result.append(result_data_1)
                         break
@@ -122,7 +123,81 @@ def list_of_processes(request):
 
 
 
+@api_view(['PUT'])
+def start_stop_process(request):
+    if request.method=="PUT" :
+        # return JsonResponse({"status": "stop scenario yes"})
+        f_manufacture_id = request.data.get('manufacture_id')
+        f_process_id = request.data.get('process_id')
+        f_process_status = request.data.get('status')
+        f_end_date = request.data.get('end_date')
+        f_start_date = request.data.get('start_date')
+        f_issue= request.data.get('issues')
+        f_time= request.data.get('time')
 
+        r = request.data
+        print('rrrrrrrrrrr', len(r), r)
+        try:
+            update_table_query = process_update.objects.get(manufacture_id=f_manufacture_id,process_id=f_process_id)
+        except process_update.DoesNotExist:
+            update_table_query = None
+            print('no data in db')
+
+        # print(update_table_query)
+        frontend_stop_data = {"manufacture_id": request.data.get('manufacture_id'),
+                               "process_id": request.data.get('process_id'),"start_date": request.data.get('start_date'),
+                               "end_date": request.data.get('end_date'),"time":request.data.get('time'),"issues":request.data.get('issues'), "status": request.data.get('status')}
+
+        serializer_data = stop_processSerializer(data=frontend_stop_data)
+        # f_serializer_data = start_processSerializer(d)
+        print('sdata', serializer_data)
+        if serializer_data.is_valid():
+            print('validated_dataaaaaaaaaa',serializer_data.validated_data)
+
+            if update_table_query is None:
+                manufacture_instance = Manufacture.objects.get(id=f_manufacture_id)
+                process_instance = Process_Details.objects.get(id=f_process_id)
+                print('/////', manufacture_instance, process_instance)
+                start_new_record = process_update(manufacture_id=manufacture_instance, process_id=process_instance,
+                                                  start_date=f_start_date, end_date="1111-11-11", time=time(0, 0, 0),
+                                                  issues="", status=f_process_status)
+                start_new_record.save()
+
+                print("00000000")
+
+                return JsonResponse({"status": "record_created"})
+
+            elif update_table_query is not None:
+
+                # print(serializer_data,serializer_data.data)
+                print('validated', serializer_data.validated_data)
+                print(serializer_data.validated_data['manufacture_id'])
+                print(serializer_data.validated_data['process_id'])
+                print(serializer_data.validated_data['status'])
+                print(serializer_data.validated_data['end_date'])
+                print(serializer_data.validated_data['issues'])
+                print(serializer_data.validated_data['time'])
+                update_table_query.manufacture_id = serializer_data.validated_data['manufacture_id']
+                update_table_query.process_id = serializer_data.validated_data['process_id']
+                update_table_query.status = serializer_data.validated_data['status']
+                update_table_query.end_date = serializer_data.validated_data['end_date']
+                update_table_query.issues = serializer_data.validated_data['issues']
+                update_table_query.time = serializer_data.validated_data['time']
+                update_table_query.save()
+
+                return JsonResponse({"status": "data_updated"})
+
+            else:
+                print("else")
+                pass
+        else:
+            print(serializer_data.errors)
+
+            return JsonResponse({"status": "invalid_manufacture_id_or_process_id"})
+
+
+    else:
+        return JsonResponse({"status":"not_stop_not_start_might_be_some_other_scenario"})
 
 
 
