@@ -127,8 +127,8 @@ def list_of_processes(request):
 def start_stop_process(request):
     if request.method=="PUT" :
         # return JsonResponse({"status": "stop scenario yes"})
-        f_manufacture_id = request.data.get('manufacture_id')
-        f_process_id = request.data.get('process_id')
+        f_manufacture_id = request.data.get('m_id')
+        f_process_id = request.data.get('p_id')
         f_process_status = request.data.get('status')
         f_end_date = request.data.get('end_date')
         f_start_date = request.data.get('start_date')
@@ -144,8 +144,8 @@ def start_stop_process(request):
             print('no data in db')
 
         # print(update_table_query)
-        frontend_stop_data = {"manufacture_id": request.data.get('manufacture_id'),
-                               "process_id": request.data.get('process_id'),"start_date": request.data.get('start_date'),
+        frontend_stop_data = {"manufacture_id": request.data.get('m_id'),
+                               "process_id": request.data.get('p_id'),"start_date": request.data.get('start_date'),
                                "end_date": request.data.get('end_date'),"time":request.data.get('time'),"issues":request.data.get('issues'), "status": request.data.get('status')}
 
         serializer_data = stop_processSerializer(data=frontend_stop_data)
@@ -208,10 +208,10 @@ def start_stop_process(request):
 
 @api_view(['GET'])
 def about_process(request):
-    if "process_id" in request.GET and "module" in request.GET:
+    if "p_id" in request.GET and "module" in request.GET and "m_id" in request.GET:
         module = request.GET["module"]
-        process_id = request.query_params.get('process_id')
-        manufacture_id = request.query_params.get('manufacture_id')
+        process_id = request.query_params.get('p_id')
+        manufacture_id = request.query_params.get('m_id')
 
         process_data=Process_Details.objects.get(pk=process_id)
         process_data_serilaizer=all_Process_DetailsSerializer(process_data)
