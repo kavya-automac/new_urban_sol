@@ -21,7 +21,8 @@ def list_manufactures(request):
 @api_view(["GET"])
 def list_of_processes(request):
     get_manufacture_id = request.query_params.get('manufacture_id')
-    get_model=Manufacture.objects.filter(manufacture_No=get_manufacture_id).values("model_id__model_name")
+    get_model=Manufacture.objects.filter(manufacture_No=get_manufacture_id).values("id","model_id__model_name")
+
     print("get_model",get_model)
     # for modeldata in get_model:
     #     print('modeldata',modeldata['model_id__model_name'])
@@ -31,16 +32,19 @@ def list_of_processes(request):
     entire_data= process_update.objects.filter(manufacture_id__manufacture_No = get_manufacture_id).order_by("-id")
     entire_data_serializer = process_updateSerializer(entire_data, many=True)
     entire_data_serializer_data= entire_data_serializer.data
-    only_process= process_update.objects.filter(manufacture_id__manufacture_No = get_manufacture_id).order_by("-id")
-    only_process_serializer=only_processSerializer(only_process,many=True)
-    only_process_serializer_data=only_process_serializer.data
-    print("only_process_serializer_data",only_process_serializer_data)
+
+    # only_process= process_update.objects.filter(manufacture_id__manufacture_No = get_manufacture_id).order_by("-id")
+    # only_process_serializer=only_processSerializer(only_process,many=True)
+    # only_process_serializer_data=only_process_serializer.data
+    # print("only_process_serializer_data",only_process_serializer_data)
     print('entire_data_serializer_data',entire_data_serializer_data)
     result = []
 
     for modeldata in get_model:
         print('modeldata',modeldata['model_id__model_name'])
-        no_processes=Product_Model.objects.filter(model_name=modeldata['model_id__model_name']).values("process_id__process_name")
+        print('get_model',get_model)
+
+        no_processes=Product_Model.objects.filter(model_name=modeldata['model_id__model_name']).values("id","process_id__process_name")
         # no_processes_serializer=only_processSerializer(no_processes,many=True)
         # no_processes_serializer_data=no_processes_serializer.data
         print('no_processes',no_processes)
@@ -50,8 +54,12 @@ def list_of_processes(request):
         for process in list_no_processes :
             print('process',process)
 
-            print(list_no_processes.index(process))
-            process_index = list_no_processes.index(process)
+
+            name=process['process_id__process_name']
+            p_id = process["id"]
+            process_id = Process_Details.objects.filter(process_name=name).values('id')
+            print('process_id',list(process_id))
+            p_list=list(process_id)
 
             # global process_data
             for process_data in entire_data_serializer_data:
@@ -60,8 +68,8 @@ def list_of_processes(request):
                 if process['process_id__process_name'] == process_data['process_name']:
                     if process_data["status"] == "Completed":
                         result_data_1 = {
-                            # "m_id": process_data["manufacture_id"],
-                            # "p_id": process_data["process_id"],
+                            "m_id": process_data["manufacture_id"],
+                            "p_id": process_data["process_id"],
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
                             "start_date": process_data["start_date"],
@@ -69,46 +77,46 @@ def list_of_processes(request):
                             "time": process_data["time"]
                         }
                         result.append(result_data_1)
-                        list_no_processes[process_index] = result_data_1
                         break
                     if process_data["status"] == "On Going":
                         result_data_2 = {
-                            # "m_id":process_data["manufacture_id"],
-                            # "p_id" :process_data["process_id"],
+                            "m_id":process_data["manufacture_id"],
+                            "p_id" :process_data["process_id"],
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
                             "start_date": process_data["start_date"],
                             "time": process_data["time"]
                         }
                         result.append(result_data_2)
-                        list_no_processes[process_index] = result_data_2
                         break
                     if process_data["status"] == "Issue Raised":
                         result_data_3 = {
-                            # "m_id": process_data["manufacture_id"],
-                            # "p_id": process_data["process_id"],
+                            "m_id": process_data["manufacture_id"],
+                            "p_id": process_data["process_id"],
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
                             "Issue": process_data["Issue Raised"],
 
                         }
                         result.append(result_data_3)
-                        list_no_processes[process_index] = result_data_3
                         break
             else:
-                result_data_4 = {
-                    # "m_id": process_data["manufacture_id"],
-                    # "p_id": process_data["process_id"],
-                    "process_status": "Not Started",
-                    "process_name": process['process_id__process_name'],
-                    # "Issue": process_data["Issue Raised"],
+                for data in p_list:
+                    print('data',data)
 
-                }
+
+                    result_data_4 = {
+                        "m_id": modeldata["id"],
+                        "p_id": data['id'],
+                        "process_status": "Not Started",
+                        "process_name": process['process_id__process_name'],
+                        # "Issue": process_data["Issue Raised"],
+
+                    }
                 result.append(result_data_4)
                 print('resultttt', result)
-                list_no_processes[process_index] = result_data_4
 
-        print('resultttt222', result)
+
         return JsonResponse({"data":result})
 
 
@@ -145,6 +153,7 @@ def about_process(request):
             result_data_1["start_date"] = updated_data.start_date
             result_data_1["end_date"] = updated_data.end_date
             result_data_1["Type"] = process_data_serilaizer_data['process_type']
+            result_data_1["issues"] = updated_data.issues
 
             data= {'data': result_data_1}
 
@@ -152,13 +161,6 @@ def about_process(request):
             result_data_2 = {}
             result_data_2["process_name"] = process_data_serilaizer_data['process_name']
             result_data_2["Image"] = process_data_serilaizer_data['image']
-            # for k,v in result_data_2.items():
-            #     print('v',v)
-            #     if v is "None":
-            #         v = "None"
-            #     print(v)
-            #
-            # print('check_null',result_data_2)
 
 
             data= {'data': result_data_2}
