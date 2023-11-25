@@ -254,9 +254,9 @@ def about_process(request):
 
             data= {'data': result_data_3}
         if module =="Live":
-            status =updated_data.status
+            status =updated_data.status if updated_data else ""
             print('status',status)
-            issue=updated_data.issues
+            issue=updated_data.issues if updated_data else ""
             if status == "On Going":
                 result ="Stop"
             elif  status == "Completed" or issue :
