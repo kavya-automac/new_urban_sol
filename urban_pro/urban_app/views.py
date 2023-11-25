@@ -125,6 +125,8 @@ def list_of_processes(request):
 
 @api_view(['PUT'])
 def start_stop_process(request):
+
+
     if request.method=="PUT" :
         # return JsonResponse({"status": "stop scenario yes"})
         f_manufacture_id = request.data.get('m_id')
@@ -217,20 +219,24 @@ def about_process(request):
         process_data_serilaizer=all_Process_DetailsSerializer(process_data)
         process_data_serilaizer_data=process_data_serilaizer.data
         print('process_data_serilaizer_data',process_data_serilaizer_data)
+        try:
+            updated_data=process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
+            print('updated_data',updated_data)
+        except :
+            updated_data= None
 
-        updated_data=process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
-        print('start_date',updated_data.start_date)
-        print('end_date',updated_data.end_date)
-        print('status',updated_data.status)
+        # print('start_date',updated_data.start_date)
+        # print('end_date',updated_data.end_date)
+        # print('status',updated_data.status)
 
         if module == "Details":
             result_data_1 = {}
             result_data_1["process_name"] = process_data_serilaizer_data['process_name']
-            result_data_1["Status"] = updated_data.status
-            result_data_1["start_date"] = updated_data.start_date
-            result_data_1["end_date"] = updated_data.end_date
+            result_data_1["Status"] = updated_data.status if updated_data else " "
+            result_data_1["start_date"] = updated_data.start_date if updated_data else " "
+            result_data_1["end_date"] = updated_data.end_date if updated_data else " "
             result_data_1["Type"] = process_data_serilaizer_data['process_type']
-            result_data_1["issues"] = updated_data.issues
+            result_data_1["issues"] = updated_data.issues if updated_data else " "
 
             data= {'data': result_data_1}
 
@@ -247,5 +253,16 @@ def about_process(request):
             result_data_3["description"]=process_data_serilaizer_data['description']
 
             data= {'data': result_data_3}
+        if module =="Live":
+            status =updated_data.status
+            print('status',status)
+            issue=updated_data.issues
+            if status == "On Going":
+                result ="Stop"
+            elif  status == "Completed" or issue :
+                result = "restart"
+            else:
+                result="Start"
+            data={"status":result}
 
     return JsonResponse(data)
