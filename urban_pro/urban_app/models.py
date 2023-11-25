@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import time, date
+from datetime import time,date
 
 
 # Create your models here.
@@ -47,7 +47,8 @@ class process_update(models.Model):
     process_id=models.ForeignKey(Process_Details,on_delete=models.CASCADE)
     start_date=models.DateField(default=date.today)
     end_date=models.DateField(default=date.today)
-    time=models.TimeField(default=time(0,0,0))
+    timer=models.TimeField(default=time(0,0,0))
+    start_time=models.TimeField(default=time(0,0,0))
     issues=models.TextField(null=True,blank=True)
     status_choices=(("Completed","Completed"),("On Going","On Going"),("Not Started","Not Started"),("Issue Raised","Issue Raised"))
     status=models.CharField(max_length=200,choices=status_choices,default="Not Started")

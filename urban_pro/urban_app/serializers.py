@@ -26,7 +26,7 @@ class process_updateSerializer(serializers.ModelSerializer):
     class Meta:
         model = process_update
         # fields ="__all__"
-        fields =["manufacture_id","process_id","manufacture_model_name","process_name","start_date","end_date","time","issues","status"]
+        fields =["manufacture_id","process_id","manufacture_model_name","process_name","start_date","end_date","timer","issues","status"]
 
 
 
@@ -64,4 +64,4 @@ class stop_processSerializer(serializers.ModelSerializer):
     class Meta:
         model = process_update
 
-        fields =["manufacture_id","process_id","start_date","end_date","time","issues","status"]
+        fields =["manufacture_id","process_id","start_date","end_date","timer","start_time","issues","status"]

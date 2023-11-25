@@ -74,7 +74,7 @@ def list_of_processes(request):
                             "process_name": process_data["process_name"],
                             "start_date": process_data["start_date"],
                             "completed_date": process_data["end_date"],
-                            "time": process_data["time"],
+                            "timer": process_data["timer"],
                             'issue_raised':process_data["issues"]
                         }
                         result.append(result_data_1)
@@ -86,7 +86,7 @@ def list_of_processes(request):
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
                             "start_date": process_data["start_date"],
-                            "time": process_data["time"]
+                            "time": process_data["timer"]
                         }
                         result.append(result_data_2)
                         break
@@ -135,7 +135,8 @@ def start_stop_process(request):
         f_end_date = request.data.get('end_date')
         f_start_date = request.data.get('start_date')
         f_issue= request.data.get('issues')
-        f_time= request.data.get('time')
+        f_time= request.data.get('timer')
+        f_start_time=request.data.get('start_time')
 
         r = request.data
         print('rrrrrrrrrrr', len(r), r)
@@ -148,11 +149,11 @@ def start_stop_process(request):
         # print(update_table_query)
         frontend_stop_data = {"manufacture_id": request.data.get('m_id'),
                                "process_id": request.data.get('p_id'),"start_date": request.data.get('start_date'),
-                               "end_date": request.data.get('end_date'),"time":request.data.get('time'),"issues":request.data.get('issues'), "status": request.data.get('status')}
+                               "end_date": request.data.get('end_date'),"timer":request.data.get('timer'),"start_time":request.data.get('start_time'),"issues":request.data.get('issues'), "status": request.data.get('status')}
 
         serializer_data = stop_processSerializer(data=frontend_stop_data)
         # f_serializer_data = start_processSerializer(d)
-        print('sdata', serializer_data)
+        # print('sdata', serializer_data)
         if serializer_data.is_valid():
             print('validated_dataaaaaaaaaa',serializer_data.validated_data)
 
@@ -161,8 +162,8 @@ def start_stop_process(request):
                 process_instance = Process_Details.objects.get(id=f_process_id)
                 print('/////', manufacture_instance, process_instance)
                 start_new_record = process_update(manufacture_id=manufacture_instance, process_id=process_instance,
-                                                  start_date=f_start_date, end_date="1111-11-11", time=time(0, 0, 0),
-                                                  issues="", status=f_process_status)
+                                                  start_date=f_start_date, end_date="1111-11-11", timer=time(0, 0, 0),
+                                                  start_time=f_start_time,issues="", status=f_process_status)
                 start_new_record.save()
 
                 print("00000000")
@@ -178,13 +179,14 @@ def start_stop_process(request):
                 print(serializer_data.validated_data['status'])
                 print(serializer_data.validated_data['end_date'])
                 print(serializer_data.validated_data['issues'])
-                print(serializer_data.validated_data['time'])
+                print(serializer_data.validated_data['timer'])
                 update_table_query.manufacture_id = serializer_data.validated_data['manufacture_id']
                 update_table_query.process_id = serializer_data.validated_data['process_id']
                 update_table_query.status = serializer_data.validated_data['status']
                 update_table_query.end_date = serializer_data.validated_data['end_date']
                 update_table_query.issues = serializer_data.validated_data['issues']
-                update_table_query.time = serializer_data.validated_data['time']
+                update_table_query.time = serializer_data.validated_data['timer']
+                update_table_query.start_time = serializer_data.validated_data['start_time']
                 update_table_query.save()
 
                 return JsonResponse({"status": "data_updated"})
@@ -243,7 +245,7 @@ def about_process(request):
         if module == "Image":
             result_data_2 = {}
             result_data_2["process_name"] = process_data_serilaizer_data['process_name']
-            result_data_2["Image"] = process_data_serilaizer_data['image']
+            result_data_2["Image"] = process_data_serilaizer_data['image'] if process_data_serilaizer_data['image'] else ""
 
 
             data= {'data': result_data_2}
@@ -255,6 +257,8 @@ def about_process(request):
             data= {'data': result_data_3}
         if module =="Live":
             status =updated_data.status if updated_data else ""
+            d_start_time =updated_data.start_time if updated_data else ""
+            d_start_date =updated_data.start_date if updated_data else ""
             print('status',status)
             issue=updated_data.issues if updated_data else ""
             if status == "On Going":
@@ -263,6 +267,6 @@ def about_process(request):
                 result = "restart"
             else:
                 result="Start"
-            data={"status":result}
+            data={"status":result,"start_time":d_start_time,"start_data":d_start_date}
 
     return JsonResponse(data)
