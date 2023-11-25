@@ -267,6 +267,6 @@ def about_process(request):
                 result = "restart"
             else:
                 result="Start"
-            data={"status":result,"start_time":d_start_time,"start_data":d_start_date}
+            data={"status":result,"start_time":d_start_time,"start_date":d_start_date}
 
     return JsonResponse(data)
