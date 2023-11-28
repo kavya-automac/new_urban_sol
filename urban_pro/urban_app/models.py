@@ -20,6 +20,7 @@ class Process_Details(models.Model):
 
 class  Product_Model(models.Model):
     objects = models.Manager()
+    # model_id=models.AutoField(primary_key=True)
     model_name=models.CharField(max_length=200)
     process_id=models.ManyToManyField(Process_Details)
 
@@ -30,9 +31,12 @@ class  Product_Model(models.Model):
 
 
 class Manufacture(models.Model):
+
     objects = models.Manager()
+    # m_id = models.AutoField(primary_key=True)
     model_id=models.ForeignKey(Product_Model,on_delete=models.CASCADE)
     manufacture_No=models.CharField(max_length=200)
+    order_id=models.IntegerField()
 
     def __str__(self):
         return "%s %s" % (self.model_id.model_name, self.manufacture_No)
@@ -56,6 +60,27 @@ class process_update(models.Model):
     def __str__(self):
         return "%s %s"%(self.process_id.process_name,self.manufacture_id)
 
+
+class Issues(models.Model):
+    objects = models.Manager()
+    issue_name=models.TextField()
+
+    def __str__(self):
+        return self.issue_name
+
+
+class Issues_details(models.Model):
+    issues_id=models.ForeignKey(Issues,on_delete=models.CASCADE)
+    manufacture_id = models.ForeignKey(Manufacture, on_delete=models.CASCADE)
+    process_id = models.ForeignKey(Process_Details, on_delete=models.CASCADE)
+    issue_raised_date=models.DateField(default=date(1111,11,11))
+    issue_status=models.CharField(max_length=200,default="")
+    issue_raised_by=models.CharField(max_length=200)
+    resolved_by = models.CharField(max_length=500,blank=True,null=True)
+    resolved_date=models.DateField(default=date(1111,11,11))
+
+    def __str__(self):
+        return "%s %s %s %s" %(self.issues_id,self.manufacture_id,self.process_id,self.issues_id.issue_name)
 
 
 
