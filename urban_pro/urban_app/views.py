@@ -12,10 +12,13 @@ def list_manufactures(request):
     manufature_serializer_data =manufature_serializer.data
     print('manufature_serializer_data',manufature_serializer_data)
     result_data=[]
+
     for data in manufature_serializer_data:
         print('data',data['manufacture_No'])
         result_data.append(data['manufacture_No'])
-    return JsonResponse({"manufacture_data":result_data})
+        # m_id=manufature_serializer_data[id]
+
+    return JsonResponse({"manufacture_data":manufature_serializer_data})
 
 
 @api_view(["GET"])
@@ -86,7 +89,7 @@ def list_of_processes(request):
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
                             "start_date": process_data["start_date"],
-                            "time": process_data["timer"]
+                            "timer": process_data["timer"]
                         }
                         result.append(result_data_2)
                         break
@@ -185,7 +188,7 @@ def start_stop_process(request):
                 update_table_query.status = serializer_data.validated_data['status']
                 update_table_query.end_date = serializer_data.validated_data['end_date']
                 update_table_query.issues = serializer_data.validated_data['issues']
-                update_table_query.time = serializer_data.validated_data['timer']
+                update_table_query.timer = serializer_data.validated_data['timer']
                 update_table_query.start_time = serializer_data.validated_data['start_time']
                 update_table_query.save()
 
@@ -270,3 +273,116 @@ def about_process(request):
             data={"status":result,"start_time":d_start_time,"start_date":d_start_date}
 
     return JsonResponse(data)
+
+
+
+@api_view(['GET'])
+def pre_defined_issues(request):
+    issues_query=Issues.objects.all()
+    print('issues_query',issues_query)
+    issues_query_serializer=predefined_issuesSerializer(issues_query,many=True)
+    print(issues_query_serializer.data)
+
+    return JsonResponse({"status":issues_query_serializer.data})
+
+@api_view(['POST'])
+
+def Issues_details_create(request):
+    f_m_id = request.data.get('m_id')
+    f_p_id = request.data.get('p_id')
+    f_issue_id = request.data.get('issue_id')
+    f_issue_raised_date=request.data.get('issue_raised_date')
+    f_issue_raised_by=request.data.get('issue_raised_by')
+    f_resolved_date=request.data.get('resolved_date')
+    f_resolved_by=request.data.get('resolved_by')
+    if request.method == 'POST':
+        # try:
+        #     get_issue= Issues_details.objects.get(issues_id=f_issue_id,manufacture_id=f_m_id,process_id=f_p_id)
+        # except:
+        #     get_issue=None
+
+
+        # print('get_issue',get_issue)
+
+        frontend_data = {"issues_id": f_issue_id,
+                              "manufacture_id":f_m_id ,
+                            "process_id":f_p_id ,
+                              "issue_raised_date":f_issue_raised_date ,
+                            "issue_raised_by":f_issue_raised_by,
+                              "resolved_by": f_resolved_by,
+        "resolved_date": f_resolved_date,
+                             }
+        print('frontend_data',frontend_data)
+
+        serializer_data = issues_detail_Serializer(data=frontend_data)
+
+        print('.......',serializer_data.is_valid())
+
+        if serializer_data.is_valid():
+            print('validated_dataaaaaaaaaa', serializer_data.validated_data)
+            serializer_data.save()
+            return JsonResponse({"status": "record_created"})
+        else:
+            return JsonResponse({"status": serializer_data.errors})
+    #
+    # if request.method == 'PUT':
+    #
+    #     if serializer_data_2.is_valid():
+    #         print('validated_data', serializer_data_2.validated_data)
+    #
+    #         # Assuming get_issue is an instance of your model
+    #         serializer_data_2.save()
+    #         # serializer_data.update(get_issue, serializer_data.validated_data)
+    #
+    #         return JsonResponse({"status": "record_updated"})
+    #     else:
+    #         return JsonResponse({"status": serializer_data.errors})
+    #
+
+
+
+
+@api_view(['PUT'])
+
+def Issues_details_update(request):
+    f_m_id = request.data.get('m_id')
+    f_p_id = request.data.get('p_id')
+    f_issue_id = request.data.get('issue_id')
+    f_ir_id = request.data.get('ir_id')
+    # f_issue_raised_date=request.data.get('issue_raised_date')
+    # f_issue_raised_by=request.data.get('issue_raised_by')
+    f_resolved_date=request.data.get('resolved_date')
+    f_resolved_by=request.data.get('resolved_by')
+    f_issue_status=request.data.get('issue_status')
+    if request.method == 'PUT':
+
+        frontend_data = { "ir_id":f_ir_id,
+                          "issues_id": f_issue_id,
+                          "manufacture_id":f_m_id ,
+                        "process_id":f_p_id ,
+                        "resolved_by": f_resolved_by,
+                        "resolved_date": f_resolved_date,
+                         'issue_status':f_issue_status
+                             }
+        print('frontend_data',frontend_data)
+        issue_detail_id = Issues_details.objects.get(id=f_ir_id)
+        serializer_data_2 = issues_detail_Serializer_22(instance=issue_detail_id,data=frontend_data)
+
+        print('.......',serializer_data_2.is_valid())
+
+        if serializer_data_2.is_valid():
+            print('validated_dataaaaaaaaaa', serializer_data_2.validated_data)
+            serializer_data_2.save()
+            return JsonResponse({"status": "record_updated"})
+        else:
+            return JsonResponse({"status": serializer_data_2.errors})
+
+
+
+#
+# @api_view(['GET'])
+#
+# def pending_process_list(request):
+#     # query=Issues_details.objects.filter()
+#
+#     return JsonResponse({"a":"m"})

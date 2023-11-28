@@ -2,7 +2,14 @@ from django.contrib import admin
 from  .models import *
 # Register your models here.
 
-admin.site.register([process_update,Process_Details,Product_Model,Manufacture])
+admin.site.register([process_update,Process_Details,Product_Model,Manufacture,Issues])
+
+
+@admin.register(Issues_details)
+class Issues_detailsAdmin(admin.ModelAdmin):
+    list_display = ['issues_id','manufacture_id','process_id','issue_raised_by']
+
+
 
 #
 # @admin.register(process_update)
