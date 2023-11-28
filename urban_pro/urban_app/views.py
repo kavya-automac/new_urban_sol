@@ -267,10 +267,11 @@ def about_process(request):
             if status == "On Going":
                 result ="Stop"
             elif  status == "Completed" or issue :
-                result = "restart"
+                result = "start"
             else:
+                status="Not Started"
                 result="Start"
-            data={"status":result,"start_time":d_start_time,"start_date":d_start_date}
+            data={"status":result,"start_time":d_start_time,"start_date":d_start_date,"p_status":status}
 
     return JsonResponse(data)
 
