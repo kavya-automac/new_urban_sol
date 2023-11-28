@@ -18,7 +18,7 @@ def list_manufactures(request):
         result_data.append(data['manufacture_No'])
         # m_id=manufature_serializer_data[id]
 
-    return JsonResponse({"manufacture_data":manufature_serializer_data})
+    return JsonResponse({"manufacture_data":result_data})
 
 
 @api_view(["GET"])

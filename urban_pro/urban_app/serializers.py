@@ -2,10 +2,10 @@ from rest_framework import serializers
 from . models import *
 
 class manufactureSerializer(serializers.ModelSerializer): #list_manufactures
-    m_id=serializers.IntegerField(source='id')
+    # m_id=serializers.IntegerField(source='id')
     class Meta:
         model = Manufacture
-        fields =['m_id','manufacture_No']
+        fields =['manufacture_No']
 
 
 
