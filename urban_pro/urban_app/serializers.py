@@ -86,3 +86,21 @@ class issues_detail_Serializer_22(serializers.ModelSerializer):
     class Meta:
         model = Issues_details
         fields=['ir_id','issues_id','manufacture_id','process_id','resolved_by','resolved_date','issue_status']
+
+
+class groupSerializer(serializers.ModelSerializer):
+    group_id = serializers.IntegerField(source='id')
+    # m_id = serializers.IntegerField(source='model_id.manufacture_id', read_only=True)
+
+
+    class Meta:
+        model = Groups
+        fields=['group_id','model_id','group_name','Progress','start_date','end_date','group_status']
+
+
+
+class group_process_Serializer(serializers.ModelSerializer):
+    # group_id = serializers.IntegerField(source='id')
+    class Meta:
+        model = Groups
+        fields=['process_id']

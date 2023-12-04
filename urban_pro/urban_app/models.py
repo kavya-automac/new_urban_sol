@@ -22,12 +22,23 @@ class  Product_Model(models.Model):
     objects = models.Manager()
     # model_id=models.AutoField(primary_key=True)
     model_name=models.CharField(max_length=200)
-    process_id=models.ManyToManyField(Process_Details)
 
 
     def __str__(self):
         return self.model_name
 
+class Groups(models.Model):
+    model_id=models.ForeignKey(Product_Model,on_delete=models.CASCADE)
+    group_name=models.CharField(max_length=200)
+    process_id=models.ManyToManyField(Process_Details)
+    Progress=models.IntegerField(default=0)
+    start_date=models.DateField(default=date(1111,11,11))
+    end_date=models.DateField(default=date(1111,11,11))
+    sequence_no = models.PositiveIntegerField()
+    group_status=models.CharField(max_length=200,default='Not Started')
+
+    def __str__(self):
+        return "%s %s"%(self.model_id,self.group_name)
 
 
 class Manufacture(models.Model):
@@ -36,7 +47,7 @@ class Manufacture(models.Model):
     # m_id = models.AutoField(primary_key=True)
     model_id=models.ForeignKey(Product_Model,on_delete=models.CASCADE)
     manufacture_No=models.CharField(max_length=200)
-    order_id=models.IntegerField()
+    order_id=models.IntegerField(default=0)
 
     def __str__(self):
         return "%s %s" % (self.model_id.model_name, self.manufacture_No)
