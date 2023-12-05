@@ -385,7 +385,7 @@ def list_of_group_process(request):
 
     # print('testtttttt', grp_status)
 
-    m_id=Manufacture.objects.get(pk=f_m_id,model_id=f_model_id)
+    m_id=Manufacture.objects.get(manufacture_No=f_m_id,model_id=f_model_id)
     print('mid',m_id.pk)
     group_lst=Groups.objects.filter(id=f_group_id,model_id=f_model_id)
     print('group_lst',group_lst)
