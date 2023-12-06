@@ -90,12 +90,25 @@ class issues_detail_Serializer_22(serializers.ModelSerializer):
 
 class groupSerializer(serializers.ModelSerializer):
     group_id = serializers.IntegerField(source='id')
+    model_id = serializers.IntegerField(source='model_id.wordpress_id', read_only=True)
+    # m_id = serializers.IntegerField(source='manufacture.manufacture_No', read_only=True)
+
     # m_id = serializers.IntegerField(source='model_id.manufacture_id', read_only=True)
 
 
     class Meta:
         model = Groups
         fields=['group_id','model_id','group_name','Progress','start_date','end_date','group_status']
+
+
+class groupSerializer22(serializers.ModelSerializer):
+    group_id = serializers.IntegerField(source='id')
+    # m_id = serializers.IntegerField(source='model_id.manufacture_id', read_only=True)
+
+
+    class Meta:
+        model = Groups
+        fields=['group_id','model_id','group_name','process_id','Progress','start_date','end_date','group_status']
 
 
 

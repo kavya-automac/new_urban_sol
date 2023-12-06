@@ -79,10 +79,21 @@ WSGI_APPLICATION = 'urban_pro.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'default.db.sqlite3',
+    },
+
+    'mysql_views_db': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'u781549539_3bKOk',
+        'USER': 'u781549539_74n39',
+        'PASSWORD': 'Autom@c1502',
+        'HOST': '62.72.28.1',
+        'PORT': '3306',
     }
+
 }
 
+DATABASE_ROUTERS = ['routers.db_routers.view_mysql']
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
