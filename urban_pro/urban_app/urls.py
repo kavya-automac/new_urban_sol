@@ -9,6 +9,8 @@ urlpatterns = [
     path('pre_defined_issues/',views.pre_defined_issues),
     path('Issues_details_update/',views.Issues_details_update),
     path('Issues_details_create/',views.Issues_details_create),
+    path('list_of_groups/',views.list_of_groups),
+    path('list_of_group_process/',views.list_of_group_process),
 ]
 
 

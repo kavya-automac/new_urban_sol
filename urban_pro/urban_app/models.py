@@ -25,6 +25,7 @@ class  Product_Model(models.Model):
     objects = models.Manager()
     model_name=models.CharField(max_length=200)
     wordpress_id=models.IntegerField(default=0)
+
     process_id=models.ManyToManyField(Process_Details)
 
 
@@ -36,6 +37,7 @@ class Groups(models.Model):
     model_id=models.ForeignKey(Product_Model,on_delete=models.CASCADE)
     group_name=models.CharField(max_length=200)
     # process_id=models.ManyToManyField(Process_Details)
+    process_id=models.ManyToManyField(Process_Details)
     Progress=models.IntegerField(default=0)
     start_date=models.DateField(default=date(1111,11,11))
     end_date=models.DateField(default=date(1111,11,11))
@@ -51,7 +53,6 @@ class grp_process(models.Model):
 
     def __str__(self):
         return "%s %s" % (self.group_id, self.process_id)
-
 
 
 class Manufacture(models.Model):
@@ -73,6 +74,7 @@ class process_update(models.Model):
     manufacture_id=models.ForeignKey(Manufacture,on_delete=models.CASCADE)
     process_id=models.ForeignKey(Process_Details,on_delete=models.CASCADE)
     # group_id=models.
+    process_id=models.ForeignKey(Groups,on_delete=models.CASCADE)
     start_date=models.DateField(default=date.today)
     end_date=models.DateField(default=date.today)
     timer=models.TimeField(default=time(0,0,0))

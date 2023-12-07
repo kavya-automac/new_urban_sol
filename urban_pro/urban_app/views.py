@@ -11,25 +11,25 @@ def list_manufactures(request):
 
     user_role=request.query_params.get('Role')
     if user_role =="Operator":
-        # result_data=[
-        #     {  "m_id": "9456_8918_1",
-        #     "model_id": "8918"},
-        #     {"m_id": "9456_8918_2",
-        #      "model_id": "8918"},
-        #     {"m_id": "9456_8918_3",
-        #      "model_id": "8918"}
-        #
-        # ]
-        manufacture_query=Manufacture.objects.all()
-        manufature_serializer = manufactureSerializer(manufacture_query,many=True)
-        manufature_serializer_data =manufature_serializer.data
-        print('manufature_serializer_data',manufature_serializer_data)
-        result_data=[]
+        result_data=[
+            {  "m_id": "9456_8918_1",
+            "model_id": "8918"},
+            {"m_id": "9456_8918_2",
+             "model_id": "8918"},
+            {"m_id": "9456_8918_3",
+             "model_id": "8918"}
 
-        for data in manufature_serializer_data:
-            print('data',data['manufacture_No'])
-            result_data.append(data['manufacture_No'])
-            # m_id=manufature_serializer_data[id]
+        ]
+        # manufacture_query=Manufacture.objects.all()
+        # manufature_serializer = manufactureSerializer(manufacture_query,many=True)
+        # manufature_serializer_data =manufature_serializer.data
+        # print('manufature_serializer_data',manufature_serializer_data)
+        # result_data=[]
+        #
+        # for data in manufature_serializer_data:
+        #     print('data',data['manufacture_No'])
+        #     result_data.append(data['manufacture_No'])
+        #     # m_id=manufature_serializer_data[id]
 
 
         return JsonResponse({"manufacture_data":result_data})
@@ -316,7 +316,7 @@ def about_process(request):
             data= {'data': result_data_3}
         if module =="Live":
 
-            
+
             status =updated_data.status if updated_data else ""
             d_start_time =updated_data.start_time if updated_data else ""
             d_start_date =updated_data.start_date if updated_data else ""
