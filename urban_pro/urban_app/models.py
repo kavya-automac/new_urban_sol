@@ -74,7 +74,7 @@ class process_update(models.Model):
     manufacture_id=models.ForeignKey(Manufacture,on_delete=models.CASCADE)
     process_id=models.ForeignKey(Process_Details,on_delete=models.CASCADE)
     # group_id=models.
-    process_id=models.ForeignKey(Groups,on_delete=models.CASCADE)
+    # process_id=models.ForeignKey(Groups,on_delete=models.CASCADE)
     start_date=models.DateField(default=date.today)
     end_date=models.DateField(default=date.today)
     timer=models.TimeField(default=time(0,0,0))
@@ -137,101 +137,101 @@ class manufacture_update(models.Model):
     def __str__(self):
         return "%s %s %s %s" % (self.manufacturing_id, self.order_id, self.model_id, self.status)
 
-
-@receiver(post_save,sender=process_update)
-def signal(sender,instance,created,**kwargs):
-    m_id = instance.manufacture_id
-    p_id = instance.process_id
-    status=instance.status
-    print('m_id',"....................", m_id.manufacture_No)
-    print('p_id',"....................", p_id.id)
-
-    if created:
-
-        # views_table_updation=mysqlview.objects.get(pk= m_id.manufacture_No)
-        # print('views_table_updation',views_table_updation)
-        # views_table_updation.start_date=instance.start_date
-        # views_table_updation.status=instance.status
-        #
-        # views_table_updation.save()
-        update_start_date = Groups.objects.get(id=p_id.id)
-        update_start_date.start_date = instance.start_date
-        update_start_date.status=instance.status
-        update_start_date.save()
-    else:
-        update_end_date = Groups.objects.get(id=p_id.id)
-        update_end_date.end_date = instance.end_date
-        update_end_date.status = instance.status
-        update_end_date.save()
-
-
-        # manufactures = mysqlview.objects.all()
-        # print('manufactures', manufactures)
-        # for record in manufactures:
-        #     print('record', record.manufacturing_id)
-        #     # views_table_updation_1 = record.manufacturing_id
-        #     print(record.manufacturing_id ==m_id.manufacture_No)
-        #     if record.manufacturing_id ==m_id.manufacture_No:
-        #         print('views_table_updation elseee',record.manufacturing_id)
-        #         print('mmmmm',instance.end_date)
-        #         print('llllll',record.end_date)
-        #         if instance.end_date is not None and isinstance(instance.end_date, date):
-        #             print('llllll', record.end_date)
-        #             record.end_date = instance.end_date
-        #             record.status = instance.status
-        #             record.save()
-        #
-        #         # record.end_date = instance.end_date
-        #         # record.status = instance.status
-        #         # record.save()
-
-
-    # if created:#already startstop api will update the end date and status
-    #     update_start_date=Groups.objects.get(id=p_id.id)
-    #     print('update_start_date',update_start_date)
-    #     todays_date = date.today()
-    #     date_string = todays_date.strftime('%Y-%m-%d')
-    #     parsed_date = datetime.date.fromisoformat(date_string)
-    #
-    #     update_start_date.start_date=parsed_date
-    #     update_start_date.save()
-    #
-    #     # process_instance = process_update.objects.get(manufacture_id__manufacture_No=m_id,
-    #     #                                               process_id=p_id.id)
-    #
-    #     # Update the start_date field
-    #     instance.start_date = parsed_date
-    #     instance.save()
-    #     print("added in 2 tables")
-    #
-    #
-    #     print("new data arrived")
-    #
-    #
-    #     print('m_id','p_id',".............................",m_id,p_id,status)
-    #
-    # else:
-    #     print('elseeeee')
-    #     if instance.status=="Completed":
-    #         endtodays_date = date.today()
-    #         date_string1 = endtodays_date.strftime('%Y-%m-%d')
-    #         end_parsed_date = datetime.date.fromisoformat(date_string1)
-    #
-    #         instance.end_date=end_parsed_date
-    #         instance.save()
-    #         update_end_date = Groups.objects.get(id=p_id.id)
-    #         update_end_date.end_date = end_parsed_date
-    #         update_end_date.status = "Completed"
-    #
-    #         update_end_date.save()
-    #         print('updates status and end date in process_uodate and group tables')
-    #     else:
-    #         update_end_date = Groups.objects.get(id=p_id.id)
-    #         update_end_date.status = "On Going"
-
-
-
-
-
-
+#
+# @receiver(post_save,sender=process_update)
+# def signal(sender,instance,created,**kwargs):
+#     m_id = instance.manufacture_id
+#     p_id = instance.process_id
+#     status=instance.status
+#     print('m_id',"....................", m_id.manufacture_No)
+#     print('p_id',"....................", p_id.id)
+#
+#     if created:
+#
+#         # views_table_updation=mysqlview.objects.get(pk= m_id.manufacture_No)
+#         # print('views_table_updation',views_table_updation)
+#         # views_table_updation.start_date=instance.start_date
+#         # views_table_updation.status=instance.status
+#         #
+#         # views_table_updation.save()
+#         update_start_date = Groups.objects.get(id=p_id.id)
+#         update_start_date.start_date = instance.start_date
+#         update_start_date.status=instance.status
+#         update_start_date.save()
+#     else:
+#         update_end_date = Groups.objects.get(id=p_id.id)
+#         update_end_date.end_date = instance.end_date
+#         update_end_date.status = instance.status
+#         update_end_date.save()
+#
+#
+#         # manufactures = mysqlview.objects.all()
+#         # print('manufactures', manufactures)
+#         # for record in manufactures:
+#         #     print('record', record.manufacturing_id)
+#         #     # views_table_updation_1 = record.manufacturing_id
+#         #     print(record.manufacturing_id ==m_id.manufacture_No)
+#         #     if record.manufacturing_id ==m_id.manufacture_No:
+#         #         print('views_table_updation elseee',record.manufacturing_id)
+#         #         print('mmmmm',instance.end_date)
+#         #         print('llllll',record.end_date)
+#         #         if instance.end_date is not None and isinstance(instance.end_date, date):
+#         #             print('llllll', record.end_date)
+#         #             record.end_date = instance.end_date
+#         #             record.status = instance.status
+#         #             record.save()
+#         #
+#         #         # record.end_date = instance.end_date
+#         #         # record.status = instance.status
+#         #         # record.save()
+#
+#
+#     # if created:#already startstop api will update the end date and status
+#     #     update_start_date=Groups.objects.get(id=p_id.id)
+#     #     print('update_start_date',update_start_date)
+#     #     todays_date = date.today()
+#     #     date_string = todays_date.strftime('%Y-%m-%d')
+#     #     parsed_date = datetime.date.fromisoformat(date_string)
+#     #
+#     #     update_start_date.start_date=parsed_date
+#     #     update_start_date.save()
+#     #
+#     #     # process_instance = process_update.objects.get(manufacture_id__manufacture_No=m_id,
+#     #     #                                               process_id=p_id.id)
+#     #
+#     #     # Update the start_date field
+#     #     instance.start_date = parsed_date
+#     #     instance.save()
+#     #     print("added in 2 tables")
+#     #
+#     #
+#     #     print("new data arrived")
+#     #
+#     #
+#     #     print('m_id','p_id',".............................",m_id,p_id,status)
+#     #
+#     # else:
+#     #     print('elseeeee')
+#     #     if instance.status=="Completed":
+#     #         endtodays_date = date.today()
+#     #         date_string1 = endtodays_date.strftime('%Y-%m-%d')
+#     #         end_parsed_date = datetime.date.fromisoformat(date_string1)
+#     #
+#     #         instance.end_date=end_parsed_date
+#     #         instance.save()
+#     #         update_end_date = Groups.objects.get(id=p_id.id)
+#     #         update_end_date.end_date = end_parsed_date
+#     #         update_end_date.status = "Completed"
+#     #
+#     #         update_end_date.save()
+#     #         print('updates status and end date in process_uodate and group tables')
+#     #     else:
+#     #         update_end_date = Groups.objects.get(id=p_id.id)
+#     #         update_end_date.status = "On Going"
+#
+#
+#
+#
+#
+#
 

@@ -206,61 +206,62 @@ def start_stop_process(request):
             print('no data in db')
 
         # print(update_table_query)
-        frontend_stop_data = {"manufacture_id__manufacture_No": request.data.get('m_id'),
-                               "process_id": request.data.get('p_id'),"start_date": request.data.get('start_date'),
-                               "end_date": request.data.get('end_date'),"timer":request.data.get('timer'),"start_time":request.data.get('start_time'),"issues":request.data.get('issues'), "status": request.data.get('status')}
+        # frontend_stop_data = {"manufacture_id__manufacture_No": request.data.get('m_id'),
+        #                        "process_id": request.data.get('p_id'),"start_date": request.data.get('start_date'),
+        #                        "end_date": request.data.get('end_date'),"timer":request.data.get('timer'),"start_time":request.data.get('start_time'),"issues":request.data.get('issues'), "status": request.data.get('status')}
+        #
+        # serializer_data = stop_processSerializer(data=frontend_stop_data)
+        # # f_serializer_data = start_processSerializer(d)
+        # # print('sdata', serializer_data)
+        # if serializer_data.is_valid():
+        #     print('validated_dataaaaaaaaaa',serializer_data.validated_data)
 
-        serializer_data = stop_processSerializer(data=frontend_stop_data)
-        # f_serializer_data = start_processSerializer(d)
-        # print('sdata', serializer_data)
-        if serializer_data.is_valid():
-            print('validated_dataaaaaaaaaa',serializer_data.validated_data)
+        if update_table_query is None:
+            manufacture_instance = Manufacture.objects.get(manufacture_No=f_manufacture_id)
+            process_instance = Process_Details.objects.get(pk=f_process_id)#Process_Details to Groups
+            print('/////', manufacture_instance, process_instance)
+            start_new_record = process_update(manufacture_id=manufacture_instance, process_id=process_instance,
+                                              start_date=f_start_date, end_date="1111-11-11", timer=time(0, 0, 0),
+                                              start_time=f_start_time,issues="", status=f_process_status)
+            start_new_record.save()
 
-            if update_table_query is None:
-                manufacture_instance = Manufacture.objects.get(manufacture_No=f_manufacture_id)
-                process_instance = Process_Details.objects.get(process_id=f_process_id)#Process_Details to Groups
-                print('/////', manufacture_instance, process_instance)
-                start_new_record = process_update(manufacture_id__manufacture_No=manufacture_instance, process_id=process_instance,
-                                                  start_date=f_start_date, end_date="1111-11-11", timer=time(0, 0, 0),
-                                                  start_time=f_start_time,issues="", status=f_process_status)
-                start_new_record.save()
+            print("00000000")
 
-                print("00000000")
+            return JsonResponse({"status": "record_created"})
 
-                return JsonResponse({"status": "record_created"})
+        elif update_table_query is not None:
 
-            elif update_table_query is not None:
+            # # print(serializer_data,serializer_data.data)
+            # print('validated', serializer_data.validated_data)
+            # # print(serializer_data.validated_data['manufacture_id'])
+            # print(serializer_data.validated_data['process_id'])
+            # print(serializer_data.validated_data['status'])
+            # print(serializer_data.validated_data['end_date'])
+            # print(serializer_data.validated_data['issues'])
+            # print(serializer_data.validated_data['timer'])
+            update_table_query.manufacture_id__manufacture_No = f_manufacture_id
+            print('update_table_query.manufacture_id__manufacture_No',update_table_query.manufacture_id__manufacture_No)
+            update_table_query.process_id__id = f_process_id
+            update_table_query.status = f_process_status
+            update_table_query.end_date = f_end_date
+            update_table_query.issues = f_issue
+            update_table_query.timer = f_time
+            update_table_query.start_time = f_start_time
+            update_table_query.save()
 
-                # print(serializer_data,serializer_data.data)
-                print('validated', serializer_data.validated_data)
-                # print(serializer_data.validated_data['manufacture_id'])
-                print(serializer_data.validated_data['process_id'])
-                print(serializer_data.validated_data['status'])
-                print(serializer_data.validated_data['end_date'])
-                print(serializer_data.validated_data['issues'])
-                print(serializer_data.validated_data['timer'])
-                update_table_query.manufacture_No = serializer_data.validated_data['manufacture_No']
-                update_table_query.process_id = serializer_data.validated_data['process_id']
-                update_table_query.status = serializer_data.validated_data['status']
-                update_table_query.end_date = serializer_data.validated_data['end_date']
-                update_table_query.issues = serializer_data.validated_data['issues']
-                update_table_query.timer = serializer_data.validated_data['timer']
-                update_table_query.start_time = serializer_data.validated_data['start_time']
-                update_table_query.save()
+            return JsonResponse({"status": "data_updated"})
 
-                return JsonResponse({"status": "data_updated"})
-
-            else:
-                print("else")
-                pass
         else:
-            print(serializer_data.errors)
-
-            return JsonResponse({"status": "invalid_manufacture_id_or_process_id"})
-
-
+            print("else")
+            pass
     else:
-        return JsonResponse({"status":"not_stop_not_start_might_be_some_other_scenario"})
+        # print(serializer_data.errors)
+
+        return JsonResponse({"status": "invalid_manufacture_id_or_process_id"})
+
+
+    # else:
+    #     return JsonResponse({"status":"not_stop_not_start_might_be_some_other_scenario"})
 
 
 
@@ -314,22 +315,63 @@ def about_process(request):
             result_data_3["description"]=process_data_serilaizer_data['description']
 
             data= {'data': result_data_3}
-        if module =="Live":
 
+        if module == "Live":
+            manf_id = Manufacture.objects.get(manufacture_No=manufacture_id)
+            m_id_models = Product_Model.objects.filter(pk=manf_id.model_id.id).values("process_id")
+            min_process_id = min(item['process_id'] for item in m_id_models)
+            print('min_process_id',min_process_id)
+            process_update_entry = None
+            print('Data types:', type(process_id), type(min_process_id))
 
-            status =updated_data.status if updated_data else ""
-            d_start_time =updated_data.start_time if updated_data else ""
-            d_start_date =updated_data.start_date if updated_data else ""
-            print('status',status)
-            issue=updated_data.issues if updated_data else ""
-            if status == "On Going":
-                result ="Stop"
-            elif  status == "Completed" or issue :
-                result = "start"
+            print('process_id',process_id)
+
+            if int(process_id) == min_process_id:
+                # If process_id is the minimum process_id
+                process_update_entry = process_update.objects.filter(process_id=process_id).first()
+                print('process=====y', process_update_entry)
+
+                if process_update_entry:
+                    print('process_update_entry',process_update_entry)
+                    status = process_update_entry.status
+                    if status == "On Going":
+                        result = "Stop"
+                        lock_status = "unlocked"
+                    elif status == "Completed" or process_update_entry.issues:
+                        result = "start"
+                        lock_status = "unlocked"
+                    else:
+                        status = "Not Started"
+                        result = "Start"
+                        lock_status = "lockes"
+                else:
+                    # Handle the case when there is no entry in Process_update for the given process_id
+                    status = "Not Started"
+                    result = "Start"
             else:
-                status="Not Started"
-                result="Start"
-            data={"status":result,"start_time":d_start_time,"start_date":d_start_date,"p_status":status}
+                # If process_id is not the minimum process_id
+                min_process_update_entry = process_update.objects.filter(process_id=min_process_id).first()
+
+                if min_process_update_entry and min_process_update_entry.status == "Completed":
+                    status = "Not Started"
+                    result = "Start"
+
+                    lock_status = "unlocked"
+                else:
+                    status = "Not Started"
+                    result = "Start"
+
+                    lock_status = "locked"
+
+            data = {
+                "status": result,
+                "start_time": process_update_entry.start_time if process_update_entry else "",
+                "start_date": process_update_entry.start_date if process_update_entry else "",
+                "p_status": status,
+
+                "lock_status": lock_status,
+            }
+
 
     return JsonResponse(data)
 
