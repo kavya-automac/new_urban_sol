@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.db.models import Min
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -9,34 +11,14 @@ from .serializers import *
 @api_view(["GET"])
 def list_manufactures(request):
 
+
     user_role=request.query_params.get('Role')
     if user_role =="Operator":
-        result_data=[
-            {  "m_id": "9456_8918_1",
-            "model_id": "8918"},
-            {"m_id": "9456_8918_2",
-             "model_id": "8918"},
-            {"m_id": "9456_8918_3",
-             "model_id": "8918"}
+        result=Operator_response()
+    if user_role =="Supervisor":
+        result=Supervisor_response()
 
-        ]
-        # manufacture_query=Manufacture.objects.all()
-        # manufature_serializer = manufactureSerializer(manufacture_query,many=True)
-        # manufature_serializer_data =manufature_serializer.data
-        # print('manufature_serializer_data',manufature_serializer_data)
-        # result_data=[]
-        #
-        # for data in manufature_serializer_data:
-        #     print('data',data['manufacture_No'])
-        #     result_data.append(data['manufacture_No'])
-        #     # m_id=manufature_serializer_data[id]
-
-
-        return JsonResponse({"manufacture_data":result_data})
-    if user_role == "Supervisor":
-        result = supervisor_manufacture_data()
-        print('mmm', result)
-        return JsonResponse({"manufacture_data":result})
+    return JsonResponse({"manufacture_data":result})
 
 
 
@@ -44,12 +26,28 @@ def list_manufactures(request):
 @api_view(["GET"])
 def list_of_processes(request):
     get_manufacture_id = request.query_params.get('manufacture_id')
-    get_model=Manufacture.objects.filter(manufacture_No=get_manufacture_id).values("id","model_id__model_name","manufacture_No")
-    # get_model=Manufacture.objects.filter(manufacture_No=get_manufacture_id).values("id","model_id__model_name")
+    get_model=mysqlview.objects.filter(manufacturing_id=get_manufacture_id)
 
-    print("get_model",get_model)
 
-    entire_data= process_update.objects.filter(manufacture_id__manufacture_No = get_manufacture_id).order_by("-id")
+    # get_model=[]
+    # model_get=mysqlview.objects.all()
+    #
+    # for rec in model_get:
+    #     get_m={}
+    #     get_m["model_id"]=rec.model_id
+    #     get_m["manufacturing_id"]=rec.manufacturing_id
+    #     get_model.append(get_m)
+    # print('get_m_res',get_model)
+    #
+    #
+
+    print('get_model1',get_model)
+    # get_model=Manufacture.objects.filter(manufacture_No=get_manufacture_id).values("id","model_id__model_name","manufacture_No")
+    # # get_model=Manufacture.objects.filter(manufacture_No=get_manufacture_id).values("id","model_id__model_name")
+    #
+    # print("get_model",get_model)
+
+    entire_data= process_update.objects.filter(manufacture_id = get_manufacture_id).order_by("-id")
     entire_data_serializer = process_updateSerializer(entire_data, many=True)
     entire_data_serializer_data= entire_data_serializer.data
 
@@ -58,11 +56,11 @@ def list_of_processes(request):
     result = []
 
     for modeldata in get_model:
-        print('modeldata',modeldata['model_id__model_name'])
+        print('modeldata',modeldata.model_id)
         print('get_model',get_model)
         #changes product_model to Groups table
         # no_processes=Groups.objects.filter(model_id__model_name=modeldata['model_id__model_name']).values("id","process_id__process_name")
-        no_processes=Product_Model.objects.filter(model_name=modeldata['model_id__model_name']).values("id","process_id__process_name")
+        no_processes=Product_Model.objects.filter(wordpress_id=modeldata.model_id).values("id","process_id__process_name")
 
         # no_processes_serializer=only_processSerializer(no_processes,many=True)
         # no_processes_serializer_data=no_processes_serializer.data
@@ -84,11 +82,11 @@ def list_of_processes(request):
 
                 print('proces', process['process_id__process_name'])
                 if process['process_id__process_name'] == process_data['process_name']:
-                    m_no=Manufacture.objects.get(pk=process_data["manufacture_id"])
-                    print('m_no',m_no.manufacture_No)
+                    m_no=mysqlview.objects.get(manufacturing_id=get_manufacture_id)
+                    print('m_no',m_no.manufacturing_id)
                     if process_data["status"] == "Completed":
                         result_data_1 = {
-                            "m_id": m_no.manufacture_No,
+                            "m_id": m_no.manufacturing_id,
                             "p_id": process_data["process_id"],
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
@@ -101,7 +99,7 @@ def list_of_processes(request):
                         break
                     if process_data["status"] == "On Going":
                         result_data_2 = {
-                            "m_id": m_no.manufacture_No,
+                            "m_id": m_no.manufacturing_id,
                             "p_id": process_data["process_id"],
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
@@ -112,7 +110,7 @@ def list_of_processes(request):
                         break
                     if process_data["status"] == "Issue Raised":
                         result_data_3 = {
-                            "m_id":m_no.manufacture_No,
+                            "m_id":m_no.manufacturing_id,
                             "p_id": process_data["process_id"],
                             "process_status": process_data["status"],
                             "process_name": process_data["process_name"],
@@ -126,7 +124,7 @@ def list_of_processes(request):
                     print('data', data)
 
                     result_data_4 = {
-                        "m_id": modeldata['manufacture_No'],
+                        "m_id": modeldata.manufacturing_id,
                         "p_id": data['id'],
                         "process_status": "Not Started",
                         "process_name": process['process_id__process_name'],
@@ -152,7 +150,7 @@ def get_process_status(m_id):
 
     for data in grp_data_serializer_data:
         try:
-            get_proces_count = process_update.objects.filter(manufacture_id__manufacture_No=m_id, process_id=data["group_id"])
+            get_proces_count = process_update.objects.filter(manufacture_id=m_id, process_id=data["group_id"])
         except process_update.DoesNotExist:
             get_proces_count = None
 
@@ -185,6 +183,7 @@ def start_stop_process(request):
 
 
     if request.method=="PUT" :
+
         # return JsonResponse({"status": "stop scenario yes"})
         f_manufacture_id = request.data.get('m_id')
         f_process_id = request.data.get('p_id')
@@ -195,12 +194,13 @@ def start_stop_process(request):
         f_time= request.data.get('timer')
         f_start_time=request.data.get('start_time')
 
+
         r = request.data
         print('rrrrrrrrrrr', len(r), r)
         # grp_p=Groups.objects.get(process_id__id=f_process_id)
         # print("grp_p",grp_p)
         try:
-            update_table_query = process_update.objects.get(manufacture_id__manufacture_No=f_manufacture_id,process_id=f_process_id)#group_id and process_id should be same
+            update_table_query = process_update.objects.get(manufacture_id=f_manufacture_id,process_id=f_process_id)#group_id and process_id should be same
         except process_update.DoesNotExist:
             update_table_query = None
             print('no data in db')
@@ -217,10 +217,10 @@ def start_stop_process(request):
         #     print('validated_dataaaaaaaaaa',serializer_data.validated_data)
 
         if update_table_query is None:
-            manufacture_instance = Manufacture.objects.get(manufacture_No=f_manufacture_id)
+            # manufacture_instance = Manufacture.objects.get(manufacture_No=f_manufacture_id)
             process_instance = Process_Details.objects.get(pk=f_process_id)#Process_Details to Groups
-            print('/////', manufacture_instance, process_instance)
-            start_new_record = process_update(manufacture_id=manufacture_instance, process_id=process_instance,
+            # print('/////', manufacture_instance, process_instance)
+            start_new_record = process_update(manufacture_id=f_manufacture_id, process_id=process_instance,
                                               start_date=f_start_date, end_date="1111-11-11", timer=time(0, 0, 0),
                                               start_time=f_start_time,issues="", status=f_process_status)
             start_new_record.save()
@@ -239,8 +239,8 @@ def start_stop_process(request):
             # print(serializer_data.validated_data['end_date'])
             # print(serializer_data.validated_data['issues'])
             # print(serializer_data.validated_data['timer'])
-            update_table_query.manufacture_id__manufacture_No = f_manufacture_id
-            print('update_table_query.manufacture_id__manufacture_No',update_table_query.manufacture_id__manufacture_No)
+            update_table_query.manufacture_id = f_manufacture_id
+            print('update_table_query.manufacture_id',update_table_query.manufacture_id)
             update_table_query.process_id__id = f_process_id
             update_table_query.status = f_process_status
             update_table_query.end_date = f_end_date
@@ -317,8 +317,10 @@ def about_process(request):
             data= {'data': result_data_3}
 
         if module == "Live":
-            manf_id = Manufacture.objects.get(manufacture_No=manufacture_id)
-            m_id_models = Product_Model.objects.filter(pk=manf_id.model_id.id).values("process_id")
+            manf_id = mysqlview.objects.get(manufacturing_id=manufacture_id)
+            # manf_id = Manufacture.objects.get(manufacture_No=manufacture_id)
+            m_id_models = Product_Model.objects.filter(wordpress_id=manf_id.model_id).values("process_id")
+            print('m_id_models',m_id_models)
             min_process_id = min(item['process_id'] for item in m_id_models)
             print('min_process_id',min_process_id)
             process_update_entry = None
@@ -690,51 +692,172 @@ def interlocked(m_id,f_group_id,f_model_id):
 
 
     # return JsonResponse({"status":"hhh"})
+#
+# def supervisor_manufacture_data(user_role):
+#     # result = [{
+#     #     "m_id": "9456_8918_1",
+#     #     "model_id": "8918",
+#     #     "start_date":"2023-12-06",
+#     #     "end_date":"1111-11-11",
+#     #     "status":"On Going",
+#     #     "progress":"20",
+#     # },{
+#     #     "m_id": "9456_8918_2",
+#     #     "model_id": "8918",
+#     #     "start_date":"1111-11-11",
+#     #     "end_date":"1111-11-11",
+#     #     "status":"Not Started",
+#     #     "progress":"0",
+#     # },{
+#     #     "m_id": "9456_8918_3",
+#     #     "model_id": "8918",
+#     #     "start_date":"2023-12-06",
+#     #     "end_date":"2023-12-07",
+#     #     "status":"Completed",
+#     #     "progress":"100",
+#     # }]
+#
+#
+#
+#
+#     manufactures=mysqlview.objects.all()
+#     print('manufactures',manufactures)
+#     data=[]
+#     # for record in manufactures:
+#     #     print('record',record)
+#     if user_role=="Operator":
+#         result = {
+#             "m_id": record.manufacturing_id,
+#             "model_id": record.model_id
+#         }
+#
+#     if user_role=="Supervisor":
+#         result=status()
+#         # result={
+#         # "m_id":record.manufacturing_id,
+#         # "model_id":record.model_id,
+#         # "start_date":"",
+#         # "end_date":"",
+#         # "status":"",
+#         # "progress":"",
+#         # }
+#         # st_date = process_update.objects.
+#     # data.append(result)
+#     return result
 
-def supervisor_manufacture_data():
-    result = [{
-        "m_id": "9456_8918_1",
-        "model_id": "8918",
-        "start_date":"2023-12-06",
-        "end_date":"1111-11-11",
-        "status":"On Going",
-        "progress":"20",
-    },{
-        "m_id": "9456_8918_2",
-        "model_id": "8918",
-        "start_date":"1111-11-11",
-        "end_date":"1111-11-11",
-        "status":"Not Started",
-        "progress":"0",
-    },{
-        "m_id": "9456_8918_3",
-        "model_id": "8918",
-        "start_date":"2023-12-06",
-        "end_date":"2023-12-07",
-        "status":"Completed",
-        "progress":"100",
-    }]
+
+# def manufacture_progress(model_id):
+#     model=Product_Model.objects.get(wordpress_id=model_id)
+#
+#
+#     return data
+
+
+def Operator_response():
+    manufactures = mysqlview.objects.all()
+    print('manufactures', manufactures)
+    data = []
+    for record in manufactures:
+        print('record',record)
+        result = {
+            "m_id": record.manufacturing_id,
+            "model_id": record.model_id
+        }
+        data.append(result)
+    return data
+
+
+def Supervisor_response():
+
+    data = mysqlview.objects.all()
+
+    # Create a dictionary to group entries by model_id
+    # model_data = defaultdict(list)
+
+    result_data = []
+
+    for i in data:
+        result = {
+            "m_id": i.manufacturing_id,
+            # Adjust some_unique_field to the appropriate field
+            "model_id": i.model_id,
+            # "start_date": "",
+            # "end_date": "",
+            # "status": "",
+            # "progress": ""
+        }
+
+        model_details = Product_Model.objects.filter(wordpress_id=i.model_id).values('process_id')
+        # model_details1 = Product_Model.objects.get(wordpress_id=i.model_id)
+        print('model_details',model_details)
+        print('manufacturing_id',i.manufacturing_id)
+        # print('model_details........',model_details1)
+        # print('model_details........',model_details1.process_id)
+        process_ids = [item['process_id'] for item in model_details]
+        if process_ids:
+            min_process_id = min(process_ids)
+            max_process_id = max(process_ids)
+            total_count=len(process_ids)
+            print('min_process_id',min_process_id)
+            print('max_process_id',max_process_id)
+            print('total_count',total_count)
+
+            try:
+                min_updated_data = process_update.objects.get(manufacture_id=i.manufacturing_id,
+                                                          process_id=min_process_id)
+                min_start_date=min_updated_data.start_date
+                print('min_start_date',min_start_date)
+                result["start_date"]=min_start_date
+
+
+            except:
+                pass
+            try:
+                max_updated_data = process_update.objects.get(manufacture_id=i.manufacturing_id,
+                                                          process_id=max_process_id,status="Completed")
+                max_end_date=max_updated_data.end_date
+                print('max_end_date',max_end_date)
+                result["end_date"]=max_end_date
+
+
+
+            except:
+                pass
+            try:
+                completed_processes=process_update.objects.filter(manufacture_id=i.manufacturing_id,status="Completed").count()
+
+                print('completed_count',completed_processes)
+                progress= int((completed_processes/total_count)*100)
+                result["progress"] = str(progress)
+                if progress == 0:
+                    result["status"]="Not Started"
+                    result["start_date"]="1111-11-11"
+                    result["end_date"]="1111-11-11"
+
+
+
+                elif progress == 100:
+                    result["status"] = "Completed"
+                else:
+                    result["status"] = "On Going"
+                    result["end_date"] = "1111-11-11"
 
 
 
 
-    # manufactures=mysqlview.objects.all()
-    # print('manufactures',manufactures)
-    # data=[]
-    # for record in manufactures:
-    #     print('record',record)
-    #     result={
-    #     "m_id":record.manufacturing_id,
-    #     "model_id":record.model_id,
-    #     # "start_date":record.start_date,
-    #     # "end_date":record.end_date,
-    #     # "status":record.status,
-    #     # "progress":record.progress,
-    #     }
-    #     data.append(result)
-    #
+
+            except:
+                pass
+
+
+        result_data.append(result)
+
+    # Convert the dictionary to the desired list format
+
+    print('result_data',result_data)
 
 
 
 
-    return result
+
+    return result_data

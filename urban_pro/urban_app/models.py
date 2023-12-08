@@ -71,7 +71,7 @@ class Manufacture(models.Model):
 
 class process_update(models.Model):
     objects = models.Manager()
-    manufacture_id=models.ForeignKey(Manufacture,on_delete=models.CASCADE)
+    manufacture_id=models.CharField(max_length=500)
     process_id=models.ForeignKey(Process_Details,on_delete=models.CASCADE)
     # group_id=models.
     # process_id=models.ForeignKey(Groups,on_delete=models.CASCADE)
@@ -113,7 +113,7 @@ class Issues_details(models.Model):
 class mysqlview(models.Model):
     order_id = models.IntegerField()
     model_id = models.IntegerField()
-    manufacturing_id=models.IntegerField(primary_key=True)
+    manufacturing_id=models.CharField(max_length=30,primary_key=True)
     # start_date=models.DateField(default=date(1111,11,11))
     # end_date=models.DateField(default=date(1111,11,11))
     # status=models.CharField(max_length=200,default="Not Started")
@@ -125,17 +125,43 @@ class mysqlview(models.Model):
 
 
 
-class manufacture_update(models.Model):
-    order_id = models.IntegerField()
+class manufacture_list_update(models.Model):
+    # order_id = models.IntegerField()
     model_id = models.IntegerField()
     manufacturing_id=models.IntegerField(primary_key=True)
     start_date=models.DateField(default=date(1111,11,11))
     end_date=models.DateField(default=date(1111,11,11))
     status=models.CharField(max_length=200,default="Not Started")
-    progress=models.IntegerField(default=0)
+    progress=models.IntegerField(default=1)
 
     def __str__(self):
-        return "%s %s %s %s" % (self.manufacturing_id, self.order_id, self.model_id, self.status)
+        return "%s %s %s" % (self.manufacturing_id,  self.model_id, self.status)
+
+# @receiver(post_save,sender=process_update)
+# def signal(sender,instance,created,**kwargs):
+#     m_id = instance.manufacture_id
+#     p_id = instance.process_id
+#     manufactures = mysqlview.objects.all()
+#     print('manufactures', manufactures)
+#     for record in manufactures:
+#         print('record', record.manufacturing_id)
+#         print('record', record.model_id)
+#         model=Product_Model.objects.filter(wordpress_id=record.model_id).values('process_id')
+#         print('............',model)
+#         total_count=len(list(model))
+#         print('total_count',total_count)
+
+# def func(9456_8918_1,1):
+
+
+
+
+
+
+
+
+
+
 
 #
 # @receiver(post_save,sender=process_update)
