@@ -761,7 +761,7 @@ def Operator_response():
         print('record',record)
         result = {
             "m_id": record.manufacturing_id,
-            "model_id": record.model_id
+            "model_id": str(record.model_id)
         }
         data.append(result)
     return data
@@ -780,7 +780,7 @@ def Supervisor_response():
         result = {
             "m_id": i.manufacturing_id,
             # Adjust some_unique_field to the appropriate field
-            "model_id": i.model_id,
+            "model_id": str(i.model_id),
             # "start_date": "",
             # "end_date": "",
             # "status": "",
