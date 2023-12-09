@@ -330,7 +330,7 @@ def about_process(request):
 
             if int(process_id) == min_process_id:
                 # If process_id is the minimum process_id
-                process_update_entry = process_update.objects.filter(process_id=process_id).first()
+                process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,process_id=process_id).first()
                 print('process=====y', process_update_entry)
 
                 if process_update_entry:
@@ -353,7 +353,7 @@ def about_process(request):
                     lock_status = "unlocked"
             else:
                 # If process_id is not the minimum process_id
-                min_process_update_entry = process_update.objects.filter(process_id=min_process_id).first()
+                min_process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,process_id=min_process_id).first()
 
                 if min_process_update_entry and min_process_update_entry.status == "Completed":
                     status = "Not Started"
