@@ -345,11 +345,12 @@ def about_process(request):
                     else:
                         status = "Not Started"
                         result = "Start"
-                        lock_status = "lockes"
+                        lock_status = "locked"
                 else:
                     # Handle the case when there is no entry in Process_update for the given process_id
                     status = "Not Started"
                     result = "Start"
+                    lock_status = "unlocked"
             else:
                 # If process_id is not the minimum process_id
                 min_process_update_entry = process_update.objects.filter(process_id=min_process_id).first()
