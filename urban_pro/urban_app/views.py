@@ -327,10 +327,11 @@ def about_process(request):
             print('Data types:', type(process_id), type(min_process_id))
 
             print('process_id',process_id)
+            process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,
+                                                                 process_id=process_id).first()
 
             if int(process_id) == min_process_id:
                 # If process_id is the minimum process_id
-                process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,process_id=process_id).first()
                 print('process=====y', process_update_entry)
 
                 if process_update_entry:
