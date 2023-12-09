@@ -282,7 +282,7 @@ def about_process(request):
         process_data_serilaizer_data=process_data_serilaizer.data
         print('process_data_serilaizer_data',process_data_serilaizer_data)
         try:
-            updated_data=process_update.objects.get(manufacture_id__manufacture_No=manufacture_id,process_id=process_id)
+            updated_data=process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
             print('updated_data',updated_data)
         except :
             updated_data= None
