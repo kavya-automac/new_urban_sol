@@ -805,22 +805,24 @@ def Supervisor_response():
 
             try:
                 min_updated_data = process_update.objects.get(manufacture_id=i.manufacturing_id,
-                                                          process_id=min_process_id)
+                                                         process_id=min_process_id)
+                # global records
+                records= True
                 min_start_date=min_updated_data.start_date
                 print('min_start_date',min_start_date)
                 result["start_date"]=min_start_date
+                result["status"]="On Going"
 
 
             except:
-                pass
+                records= False
+
             try:
                 max_updated_data = process_update.objects.get(manufacture_id=i.manufacturing_id,
                                                           process_id=max_process_id,status="Completed")
                 max_end_date=max_updated_data.end_date
                 print('max_end_date',max_end_date)
                 result["end_date"]=max_end_date
-
-
 
             except:
                 pass
@@ -830,10 +832,15 @@ def Supervisor_response():
                 print('completed_count',completed_processes)
                 progress= int((completed_processes/total_count)*100)
                 result["progress"] = str(progress)
-                if progress == 0:
+                if progress == 0 and records == False:
                     result["status"]="Not Started"
                     result["start_date"]="1111-11-11"
                     result["end_date"]="1111-11-11"
+                elif progress == 0 and records == True:
+                    result["status"] = "On Going"
+                    result["start_date"] = min_start_date
+                    result["end_date"] = "1111-11-11"
+
 
 
 
