@@ -369,7 +369,7 @@ def about_process(request):
                         lock_status = "unlocked"
                         # status = "Not Started"
 
-                        current_process_update_entry= process_update.objects.filter(manufacture_id=manufacture_id,process_id=process_id)
+                        current_process_update_entry= process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
                         print('current_process_update_entry',current_process_update_entry)
                         if current_process_update_entry:
                             if current_process_update_entry.status=="On Going":
