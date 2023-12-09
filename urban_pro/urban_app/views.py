@@ -336,6 +336,7 @@ def about_process(request):
                 if process_update_entry:
                     print('process_update_entry',process_update_entry)
                     status = process_update_entry.status
+                    print('statussssssssssssssssss',status)
                     if status == "On Going":
                         result = "Stop"
                         lock_status = "unlocked"
@@ -347,7 +348,6 @@ def about_process(request):
                         result = "Start"
                         lock_status = "locked"
                 else:
-                    # Handle the case when there is no entry in Process_update for the given process_id
                     status = "Not Started"
                     result = "Start"
                     lock_status = "unlocked"
