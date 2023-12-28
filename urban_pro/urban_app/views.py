@@ -810,15 +810,20 @@ def Supervisor_response():
         result = {
             "m_id": i.manufacturing_id,
             # Adjust some_unique_field to the appropriate field
-            "model_id": str(i.model_id),
+            # "model_id": str(i.model_id),
+            # "model_id": "",
             # "start_date": "",
             # "end_date": "",
             # "status": "",
             # "progress": ""
         }
 
-        model_details = Product_Model.objects.filter(wordpress_id=i.model_id).values('process_id')
+        model_details = Product_Model.objects.filter(wordpress_id=i.model_id).values('process_id','model_name')
+        model_details1 = Product_Model.objects.get(wordpress_id=i.model_id)
         # model_details1 = Product_Model.objects.get(wordpress_id=i.model_id)
+        print('model_details111',model_details1)
+        result['model_id']=model_details1.model_name
+
         print('model_details',model_details)
         print('manufacturing_id',i.manufacturing_id)
         # print('model_details........',model_details1)
