@@ -137,6 +137,21 @@ class manufacture_list_update(models.Model):
     def __str__(self):
         return "%s %s %s" % (self.manufacturing_id,  self.model_id, self.status)
 
+
+
+
+@receiver(post_save,sender=process_update)
+def signal(sender,instance,created,**kwargs):
+    print('in signal')
+    m_id = instance.manufacture_id
+    p_id = instance.process_id
+    status = instance.status
+    from .views import sending_email
+    sending_email(m_id,p_id,status)
+
+
+
+
 # @receiver(post_save,sender=process_update)
 # def signal(sender,instance,created,**kwargs):
 #     m_id = instance.manufacture_id

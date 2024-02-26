@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from django.conf import settings
 from django.db.models import Min
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -8,6 +9,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from . models import *
 from .serializers import *
+from django.core.mail import send_mail
 @api_view(["GET"])
 def list_manufactures(request):
 
@@ -27,6 +29,7 @@ def list_manufactures(request):
 def list_of_processes(request):
     get_manufacture_id = request.query_params.get('manufacture_id')
     get_model=mysqlview.objects.filter(manufacturing_id=get_manufacture_id)
+    dept = request.query_params.get('department')
 
 
     # get_model=[]
@@ -60,7 +63,27 @@ def list_of_processes(request):
         print('get_model',get_model)
         #changes product_model to Groups table
         # no_processes=Groups.objects.filter(model_id__model_name=modeldata['model_id__model_name']).values("id","process_id__process_name")
-        no_processes=Product_Model.objects.filter(wordpress_id=modeldata.model_id).values("id","process_id__process_name")
+        # try:
+        #     dept = request.query_params.get('department')
+        #
+        #     no_processes=Product_Model.objects.filter(wordpress_id=modeldata.model_id,process_id__process_type=dept).\
+        #         values("id","process_id__process_name")
+        # except:
+        #     no_processes = Product_Model.objects.filter(wordpress_id=modeldata.model_id).values("id",
+        #                                                                                         "process_id__process_name")
+        try:
+            if dept:
+                no_processes = Product_Model.objects.filter(
+                    wordpress_id=modeldata.model_id,
+                    process_id__process_type=dept
+                ).values("id", "process_id__process_name")
+            else:
+                raise ValueError("Department parameter is missing")
+        except ValueError as e:
+            # Handle the case where the department parameter is missing
+            no_processes = Product_Model.objects.filter(
+                wordpress_id=modeldata.model_id
+            ).values("id", "process_id__process_name")
 
         # no_processes_serializer=only_processSerializer(no_processes,many=True)
         # no_processes_serializer_data=no_processes_serializer.data
@@ -800,6 +823,7 @@ def Operator_response():
 def Supervisor_response():
 
     data = mysqlview.objects.all()
+    print('data',data)
 
     # Create a dictionary to group entries by model_id
     # model_data = defaultdict(list)
@@ -821,11 +845,11 @@ def Supervisor_response():
         model_details = Product_Model.objects.filter(wordpress_id=i.model_id).values('process_id','model_name')
         model_details1 = Product_Model.objects.get(wordpress_id=i.model_id)
         # model_details1 = Product_Model.objects.get(wordpress_id=i.model_id)
-        print('model_details111',model_details1)
+        # print('model_details111',model_details1)
         result['model_id']=model_details1.model_name
 
-        print('model_details',model_details)
-        print('manufacturing_id',i.manufacturing_id)
+        # print('model_details',model_details)
+        # print('manufacturing_id',i.manufacturing_id)
         # print('model_details........',model_details1)
         # print('model_details........',model_details1.process_id)
         process_ids = [item['process_id'] for item in model_details]
@@ -903,3 +927,11 @@ def Supervisor_response():
 
 
     return result_data
+
+def sending_email(m_id,p_id,status):
+
+    # print('sendinggggggg email')
+    email_body=f'''<p>{m_id} machine {p_id} {status}</p>'''
+    send_mail("Machine Manufacturing update",'',from_email=settings.EMAIL_HOST_USER,
+              recipient_list=["kavya.automac@gmail.com","veldisriharsha@gmail.com"],html_message=email_body)
+    # print('sentttt')
