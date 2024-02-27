@@ -10,6 +10,10 @@ from rest_framework.decorators import api_view
 from . models import *
 from .serializers import *
 from django.core.mail import send_mail
+from django.http import JsonResponse, HttpResponse
+from openpyxl import Workbook
+
+
 @api_view(["GET"])
 def list_manufactures(request):
 
@@ -922,11 +926,43 @@ def Supervisor_response():
 
     print('result_data',result_data)
 
-
-
-
-
     return result_data
+
+@api_view(["GET"])
+
+def reports_data(request):
+    # entire_data = process_update.objects.all()
+    # entire_data_serializer = reports_process_update_Serializer(entire_data, many=True)
+    # entire_data_serializer_data = entire_data_serializer.data
+    # print('entire_data_serializer_data',entire_data_serializer_data)
+    #
+    # return JsonResponse({"reports_data":entire_data_serializer_data})
+    entire_data = process_update.objects.all()
+    entire_data_serializer = reports_process_update_Serializer(entire_data, many=True)
+    entire_data_serializer_data = entire_data_serializer.data
+
+    # Create an Excel workbook
+    wb = Workbook()
+    ws = wb.active
+
+    # Write headers
+    headers = list(entire_data_serializer_data[0].keys())
+    ws.append(headers)
+
+    # Write data
+    for item in entire_data_serializer_data:
+        ws.append(list(item.values()))
+
+    # Save the workbook to a response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="reports.xlsx"'
+    wb.save(response)
+
+
+    return response
+
+
+
 
 def sending_email(m_id,p_id,status):
 

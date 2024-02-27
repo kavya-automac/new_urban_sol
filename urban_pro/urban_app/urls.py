@@ -6,6 +6,8 @@ urlpatterns = [
     path('processes/',views.list_of_processes),
     path('about_process/',views.about_process),
     path('start_stop_process/',views.start_stop_process),
+    path('reports/',views.reports_data),
+
     path('pre_defined_issues/',views.pre_defined_issues),
     path('Issues_details_update/',views.Issues_details_update),
     path('Issues_details_create/',views.Issues_details_create),
