@@ -965,8 +965,8 @@ def Supervisor_response():
 
 def reports_data(request):
 
-    excel_download()
-    return JsonResponse({"message":"Excel file downloaded successfully."})
+    res=excel_download()
+    return res
 
 
 def excel_download():
