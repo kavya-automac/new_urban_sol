@@ -1,7 +1,7 @@
-from collections import defaultdict
+
 
 from django.conf import settings
-from django.db.models import Min
+from django.db.models import Min, Count
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -48,7 +48,7 @@ def list_of_processes(request):
     #
     #
 
-    print('get_model1',get_model)
+    # print('get_model1',get_model)
     # get_model=Manufacture.objects.filter(manufacture_No=get_manufacture_id).values("id","model_id__model_name","manufacture_No")
     # # get_model=Manufacture.objects.filter(manufacture_No=get_manufacture_id).values("id","model_id__model_name")
     #
@@ -59,12 +59,12 @@ def list_of_processes(request):
     entire_data_serializer_data= entire_data_serializer.data
 
 
-    print('entire_data_serializer_data',entire_data_serializer_data)
+    # print('entire_data_serializer_data',entire_data_serializer_data)
     result = []
 
     for modeldata in get_model:
-        print('modeldata',modeldata.model_id)
-        print('get_model',get_model)
+        # print('modeldata',modeldata.model_id)
+        # print('get_model',get_model)
         #changes product_model to Groups table
         # no_processes=Groups.objects.filter(model_id__model_name=modeldata['model_id__model_name']).values("id","process_id__process_name")
         # try:
@@ -75,42 +75,75 @@ def list_of_processes(request):
         # except:
         #     no_processes = Product_Model.objects.filter(wordpress_id=modeldata.model_id).values("id",
         #                                                                                         "process_id__process_name")
+        # try:
+        #     if dept:
+        #         no_processes = Product_Model.objects.filter(
+        #             wordpress_id=modeldata.model_id,
+        #             process_id__process_type=dept
+        #         ).values("id", "process_id__process_name")
+        #     # if dept == "ADMIN":
+        #     #     no_processes = Product_Model.objects.filter(
+        #     #         wordpress_id=modeldata.model_id
+        #     #     ).values("id", "process_id__process_name")
+        #
+        #     else:
+        #         raise ValueError("Department parameter is missing")
+        # except ValueError as e:
+        #     # Handle the case where the department parameter is missing
+        #     no_processes = Product_Model.objects.filter(
+        #         wordpress_id=modeldata.model_id
+        #     ).values("id", "process_id__process_name")
+
         try:
             if dept:
+                # Filter processes based on department
                 no_processes = Product_Model.objects.filter(
                     wordpress_id=modeldata.model_id,
                     process_id__process_type=dept
                 ).values("id", "process_id__process_name")
             else:
+                # If department is not provided, raise a custom exception
                 raise ValueError("Department parameter is missing")
+
+            if dept == "ADMIN":
+                # If the department is "ADMIN", execute additional query
+                no_processes = Product_Model.objects.filter(
+                    wordpress_id=modeldata.model_id
+                ).values("id", "process_id__process_name")
+
+
+
         except ValueError as e:
             # Handle the case where the department parameter is missing
             no_processes = Product_Model.objects.filter(
                 wordpress_id=modeldata.model_id
             ).values("id", "process_id__process_name")
 
+
+
+
         # no_processes_serializer=only_processSerializer(no_processes,many=True)
         # no_processes_serializer_data=no_processes_serializer.data
-        print('no_processes',no_processes)
+        print('no_processes',len(no_processes))
         list_no_processes=list(no_processes)
 
         for process in list_no_processes:
-            print('process', process)
+            # print('process', process)
 
             name = process['process_id__process_name']
             p_id = process["id"]
             process_id = Process_Details.objects.filter(process_name=name).values('id')
-            print('process_id', list(process_id))
+            # print('process_id', list(process_id))
             p_list = list(process_id)
 
             # global process_data
             for process_data in entire_data_serializer_data:
-                print('process_data',process_data)
+                # print('process_data',process_data)
 
-                print('proces', process['process_id__process_name'])
+                # print('proces', process['process_id__process_name'])
                 if process['process_id__process_name'] == process_data['process_name']:
                     m_no=mysqlview.objects.get(manufacturing_id=get_manufacture_id)
-                    print('m_no',m_no.manufacturing_id)
+                    # print('m_no',m_no.manufacturing_id)
                     if process_data["status"] == "Completed":
                         result_data_1 = {
                             "m_id": m_no.manufacturing_id,
@@ -148,7 +181,7 @@ def list_of_processes(request):
                         break
             else:
                 for data in p_list:
-                    print('data', data)
+                    # print('data', data)
 
                     result_data_4 = {
                         "m_id": modeldata.manufacturing_id,
@@ -159,7 +192,7 @@ def list_of_processes(request):
 
                     }
                 result.append(result_data_4)
-                print('resultttt', result)
+        print('resultttt', len(result))
 
         return JsonResponse({"data": result})
 
@@ -931,12 +964,12 @@ def Supervisor_response():
 @api_view(["GET"])
 
 def reports_data(request):
-    # entire_data = process_update.objects.all()
-    # entire_data_serializer = reports_process_update_Serializer(entire_data, many=True)
-    # entire_data_serializer_data = entire_data_serializer.data
-    # print('entire_data_serializer_data',entire_data_serializer_data)
-    #
-    # return JsonResponse({"reports_data":entire_data_serializer_data})
+
+    excel_download()
+    return JsonResponse({"message":"Excel file downloaded successfully."})
+
+
+def excel_download():
     entire_data = process_update.objects.all()
     entire_data_serializer = reports_process_update_Serializer(entire_data, many=True)
     entire_data_serializer_data = entire_data_serializer.data
