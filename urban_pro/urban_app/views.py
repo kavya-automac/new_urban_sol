@@ -285,7 +285,7 @@ def start_stop_process(request):
                                               start_time=f_start_time,issues="", status=f_process_status)
             start_new_record.save()
 
-            print("00000000")
+            # print("00000000")
 
             return JsonResponse({"status": "record_created"})
 
@@ -300,7 +300,7 @@ def start_stop_process(request):
             # print(serializer_data.validated_data['issues'])
             # print(serializer_data.validated_data['timer'])
             update_table_query.manufacture_id = f_manufacture_id
-            print('update_table_query.manufacture_id',update_table_query.manufacture_id)
+            # print('update_table_query.manufacture_id',update_table_query.manufacture_id)
             update_table_query.process_id__id = f_process_id
             update_table_query.status = f_process_status
             update_table_query.end_date = f_end_date
@@ -340,10 +340,10 @@ def about_process(request):
         process_data=Process_Details.objects.get(pk=process_id)
         process_data_serilaizer=all_Process_DetailsSerializer(process_data)
         process_data_serilaizer_data=process_data_serilaizer.data
-        print('process_data_serilaizer_data',process_data_serilaizer_data)
+        # print('process_data_serilaizer_data',process_data_serilaizer_data)
         try:
             updated_data=process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
-            print('updated_data',updated_data)
+            # print('updated_data',updated_data)
         except :
             updated_data= None
 
@@ -380,22 +380,22 @@ def about_process(request):
             manf_id = mysqlview.objects.get(manufacturing_id=manufacture_id)
             # manf_id = Manufacture.objects.get(manufacture_No=manufacture_id)
             m_id_models = Product_Model.objects.filter(wordpress_id=manf_id.model_id).values("process_id")
-            print('m_id_models',m_id_models)
+            # print('m_id_models',m_id_models)
             min_process_id = min(item['process_id'] for item in m_id_models)
-            print('min_process_id',min_process_id)
+            # print('min_process_id',min_process_id)
             process_update_entry = None
-            print('Data types:', type(process_id), type(min_process_id))
+            # print('Data types:', type(process_id), type(min_process_id))
 
-            print('process_id',process_id)
+            # print('process_id',process_id)
             process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,
                                                                  process_id=process_id).first()
 
             if int(process_id) == min_process_id:
                 # If process_id is the minimum process_id
-                print('process=====y', process_update_entry)
+                # print('process=====y', process_update_entry)
 
                 if process_update_entry:
-                    print('process_update_entry',process_update_entry)
+                    # print('process_update_entry',process_update_entry)
                     status = process_update_entry.status
                     print('statussssssssssssssssss',status)
                     if status == "On Going":
@@ -416,10 +416,10 @@ def about_process(request):
 
                 prev_process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,process_id__lt=process_id).order_by("process_id").first()
 
-                print('prev_process_update_entry',prev_process_update_entry)
+                # print('prev_process_update_entry',prev_process_update_entry)
                 if prev_process_update_entry:
                     prev_status = prev_process_update_entry.status
-                    print('prev_status',prev_status)
+                    # print('prev_status',prev_status)
 
                     if prev_status != "Completed":
                         result = "start"
@@ -431,7 +431,7 @@ def about_process(request):
                         # status = "Not Started"
 
                         current_process_update_entry= process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
-                        print('current_process_update_entry',current_process_update_entry)
+                        # print('current_process_update_entry',current_process_update_entry)
                         if current_process_update_entry:
                             if current_process_update_entry.status=="On Going":
                                 result = "stop"
