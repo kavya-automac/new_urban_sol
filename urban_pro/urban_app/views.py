@@ -407,7 +407,7 @@ def about_process(request):
                     else:
                         status = "Not Started"
                         result = "Start"
-                        lock_status = "locked"
+                        lock_status = "unlocked"
                 else:
                     status = "Not Started"
                     result = "Start"
@@ -423,7 +423,7 @@ def about_process(request):
 
                     if prev_status != "Completed":
                         result = "start"
-                        lock_status = "locked"
+                        lock_status = "unlocked"
                         status="Not Started"
                     else:
                         # result = "start"
@@ -452,7 +452,7 @@ def about_process(request):
 
                 else:
                     result = "start"
-                    lock_status = "locked"
+                    lock_status = "unlocked"
                     status = "Not Started"
 
             data = {
