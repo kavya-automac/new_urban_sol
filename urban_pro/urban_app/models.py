@@ -18,7 +18,7 @@ class Process_Details(models.Model):
     process_name=models.CharField(max_length=200)
 
     def __str__(self):
-        return "%s %s"%(self.process_name,self.process_type)
+        return "%s %s %s"%(self.process_name,self.process_type,self.description)
 
 
 class  Product_Model(models.Model):
