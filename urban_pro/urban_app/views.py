@@ -389,6 +389,7 @@ def about_process(request):
             # print('process_id',process_id)
             process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,
                                                                  process_id=process_id).first()
+            print('process_update_entry 1...',process_update_entry)
 
             if int(process_id) == min_process_id:
                 # If process_id is the minimum process_id
@@ -416,7 +417,7 @@ def about_process(request):
 
                 prev_process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,process_id__lt=process_id).order_by("process_id").first()
 
-                # print('prev_process_update_entry',prev_process_update_entry)
+                print('prev_process_update_entry 2...',prev_process_update_entry)
                 if prev_process_update_entry:
                     prev_status = prev_process_update_entry.status
                     # print('prev_status',prev_status)
@@ -431,7 +432,7 @@ def about_process(request):
                         # status = "Not Started"
 
                         current_process_update_entry= process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
-                        # print('current_process_update_entry',current_process_update_entry)
+                        print('current_process_update_entry 3...',current_process_update_entry)
                         if current_process_update_entry:
                             if current_process_update_entry.status=="On Going":
                                 result = "stop"
