@@ -77,7 +77,7 @@ class process_update(models.Model):
     # process_id=models.ForeignKey(Groups,on_delete=models.CASCADE)
     start_date=models.DateField(default=date.today)
     end_date=models.DateField(default=date.today)
-    timer=models.TimeField(default=time(0,0,0))
+    timer=models.DurationField()
     start_time=models.TimeField(default=time(0,0,0))
     issues=models.TextField(null=True,blank=True)
     status_choices=(("Completed","Completed"),("On Going","On Going"),("Not Started","Not Started"),("Issue Raised","Issue Raised"))
