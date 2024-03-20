@@ -293,7 +293,6 @@ def start_stop_process(request):
             # manufacture_instance = Manufacture.objects.get(manufacture_No=f_manufacture_id)
             process_instance = Process_Details.objects.get(pk=f_process_id)#Process_Details to Groups
             # print('/////', manufacture_instance, process_instance)
-            timer=timedelta(hours=20,minutes=30,seconds=10)
             start_new_record = process_update(manufacture_id=f_manufacture_id, process_id=process_instance,
                                               start_date=f_start_date, end_date="1111-11-11", timer=timer,
                                               start_time=f_start_time,issues="", status=f_process_status)
