@@ -254,19 +254,19 @@ def start_stop_process(request):
         f_time= request.data.get('timer')
         f_start_time=request.data.get('start_time')
 
-
-        hours, minutes, seconds = map(int, f_time.split(':'))
-
-        # Create a timedelta object
-        # timer = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        # total_seconds = hours * 3600 + minutes * 60 + seconds
-        # timer = timedelta(seconds=total_seconds)
-
-        # Create a timedelta object
-        timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
-
-        print('timer',timer)
-        print('timer type',type(timer))
+        #
+        # hours, minutes, seconds = map(int, f_time.split(':'))
+        #
+        # # Create a timedelta object
+        # # timer = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        # # total_seconds = hours * 3600 + minutes * 60 + seconds
+        # # timer = timedelta(seconds=total_seconds)
+        #
+        # # Create a timedelta object
+        # timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        #
+        # print('timer',timer)
+        # print('timer type',type(timer))
 
         r = request.data
         print('rrrrrrrrrrr', len(r), r)
@@ -293,8 +293,9 @@ def start_stop_process(request):
             # manufacture_instance = Manufacture.objects.get(manufacture_No=f_manufacture_id)
             process_instance = Process_Details.objects.get(pk=f_process_id)#Process_Details to Groups
             # print('/////', manufacture_instance, process_instance)
+            # timer=timedelta(hours=20,minutes=30,seconds=10)
             start_new_record = process_update(manufacture_id=f_manufacture_id, process_id=process_instance,
-                                              start_date=f_start_date, end_date="1111-11-11", timer=timer,
+                                              start_date=f_start_date, end_date="1111-11-11", timer=f_time,
                                               start_time=f_start_time,issues="", status=f_process_status)
             start_new_record.save()
 
@@ -318,7 +319,7 @@ def start_stop_process(request):
             update_table_query.status = f_process_status
             update_table_query.end_date = f_end_date
             update_table_query.issues = f_issue
-            update_table_query.timer = timer
+            update_table_query.timer = f_time
             update_table_query.start_time = f_start_time
             update_table_query.save()
 
