@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
+from django.utils.dateparse import parse_duration
 from rest_framework.decorators import api_view
 from . models import *
 from .serializers import *
@@ -16,7 +17,10 @@ from openpyxl import Workbook
 
 @api_view(["GET"])
 def list_manufactures(request):
-
+    # database_path = BASE_DIR / 'default.db.sqlite3'
+    # table_name = 'process_update'
+    # rr=testing_col_datatypes.get_column_datatypes(database_path, table_name)
+    # print('.....................',rr)
 
     user_role=request.query_params.get('Role')
     if user_role =="Operator":
@@ -255,7 +259,7 @@ def start_stop_process(request):
         f_start_time=request.data.get('start_time')
 
 
-        # hours, minutes, seconds = map(int, f_time.split(':'))
+        hours, minutes, seconds = map(int, f_time.split(':'))
 
         # Create a timedelta object
         # timer = timedelta(hours=hours, minutes=minutes, seconds=seconds)
@@ -263,11 +267,11 @@ def start_stop_process(request):
         # timer = timedelta(seconds=total_seconds)
 
         # Create a timedelta object
-        # d_timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        # timer = f"{hours}:{minutes}:{seconds}"
+        d_timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        timer = f"{hours}:{minutes}:{seconds}"
 
-        print('timer',f_time)
-        print('timer type',type(f_time))
+        print('timer',timer)
+        print('timer type',type(timer))
 
         r = request.data
         print('rrrrrrrrrrr', len(r), r)
@@ -278,11 +282,11 @@ def start_stop_process(request):
         except process_update.DoesNotExist:
             update_table_query = None
             print('no data in db')
-        # tt = parse_duration(timer)
-        # print('ttttttttt', tt)
-        # dd = f"{tt.seconds // 3600:02d}:{tt.seconds % 3600 // 60:02d}:{tt.seconds % 60:02d}"
-        # print('dddd', dd)
-        # print('dddd type', type(dd))
+        tt = parse_duration(timer)
+        print('ttttttttt', tt)
+        dd = f"{tt.seconds // 3600:02d}:{tt.seconds % 3600 // 60:02d}:{tt.seconds % 60:02d}"
+        print('dddd', dd)
+        print('dddd type', type(dd))
 
         # print(update_table_query)
         # frontend_stop_data = {"manufacture_id__manufacture_No": request.data.get('m_id'),
@@ -303,7 +307,7 @@ def start_stop_process(request):
 
 
             start_new_record = process_update(manufacture_id=f_manufacture_id, process_id=process_instance,
-                                              start_date=f_start_date, end_date="1111-11-11", timer=f_time,
+                                              start_date=f_start_date, end_date="1111-11-11", timer=timer,
                                               start_time=f_start_time,issues="", status=f_process_status)
             start_new_record.save()
 
@@ -327,7 +331,7 @@ def start_stop_process(request):
             update_table_query.status = f_process_status
             update_table_query.end_date = f_end_date
             update_table_query.issues = f_issue
-            update_table_query.timer = f_time
+            update_table_query.timer = dd
             update_table_query.start_time = f_start_time
             update_table_query.save()
 
