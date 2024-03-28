@@ -441,46 +441,48 @@ def about_process(request):
                     lock_status = "unlocked"
             else:
 
-                prev_process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,process_id__lt=process_id).order_by("process_id").first()
+                # prev_process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,process_id__lt=process_id).order_by("process_id").first()
+                #
+                # print('prev_process_update_entry 2...',prev_process_update_entry)
+                # if prev_process_update_entry:
+                #     prev_status = prev_process_update_entry.status
+                #     # print('prev_status',prev_status)
 
-                print('prev_process_update_entry 2...',prev_process_update_entry)
-                if prev_process_update_entry:
-                    prev_status = prev_process_update_entry.status
-                    # print('prev_status',prev_status)
-
-                    if prev_status != "Completed":
+                    # if prev_status != "Completed":
+                    #     result = "start"
+                    #     lock_status = "unlocked"
+                    #     status="Not Started"
+                    # else:
+                    #     # result = "start"
+                    #     lock_status = "unlocked"
+                    #     # status = "Not Started"
+                try:
+                    current_process_update_entry = process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
+                except:
+                    current_process_update_entry = None
+                print('current_process_update_entry 3...',current_process_update_entry)
+                if current_process_update_entry is not None:
+                    if current_process_update_entry.status=="On Going":
+                        result = "stop"
+                        # lock_status = "unlocked"
+                        status="On Going"
+                    elif current_process_update_entry.status=="Completed":
                         result = "start"
-                        lock_status = "unlocked"
-                        status="Not Started"
+                        # lock_status = "unlocked"
+                        status = "Completed"
                     else:
-                        # result = "start"
-                        lock_status = "unlocked"
-                        # status = "Not Started"
-
-                        current_process_update_entry= process_update.objects.get(manufacture_id=manufacture_id,process_id=process_id)
-                        print('current_process_update_entry 3...',current_process_update_entry)
-                        if current_process_update_entry:
-                            if current_process_update_entry.status=="On Going":
-                                result = "stop"
-                                # lock_status = "unlocked"
-                                status="On Going"
-                            elif current_process_update_entry.status=="Completed":
-                                result = "start"
-                                # lock_status = "unlocked"
-                                status = "Completed"
-                            else:
-                                result = "start"
-                                # lock_status = "unlocked"
-                                status = "Not Started"
-                        else:
-                            result = "start"
-                            lock_status = "unlocked"
-                            status = "Not Started"
-
+                        result = "start"
+                        # lock_status = "unlocked"
+                        status = "Not Started"
                 else:
                     result = "start"
                     lock_status = "unlocked"
                     status = "Not Started"
+
+                # else:
+                #     result = "start"
+                #     lock_status = "unlocked"
+                #     status = "Not Started"
 
             data = {
                 "status": result,
