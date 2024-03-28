@@ -408,7 +408,7 @@ def about_process(request):
             m_id_models = Product_Model.objects.filter(wordpress_id=manf_id.model_id).values("process_id")
             # print('m_id_models',m_id_models)
             min_process_id = min(item['process_id'] for item in m_id_models)
-            # print('min_process_id',min_process_id)
+            print('min_process_id',min_process_id)
             process_update_entry = None
             # print('Data types:', type(process_id), type(min_process_id))
 
@@ -416,13 +416,14 @@ def about_process(request):
             process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,
                                                                  process_id=process_id).first()
             print('process_update_entry 1...',process_update_entry)
+            print('int(process_id) 1...',int(process_id))
 
             if int(process_id) == min_process_id:
                 # If process_id is the minimum process_id
                 # print('process=====y', process_update_entry)
 
                 if process_update_entry:
-                    # print('process_update_entry',process_update_entry)
+                    print('process_update_entry',process_update_entry)
                     status = process_update_entry.status
                     print('statussssssssssssssssss',status)
                     if status == "On Going":
@@ -440,6 +441,7 @@ def about_process(request):
                     result = "Start"
                     lock_status = "unlocked"
             else:
+                print('elseeeeee')
 
                 # prev_process_update_entry = process_update.objects.filter(manufacture_id=manufacture_id,process_id__lt=process_id).order_by("process_id").first()
                 #
@@ -464,15 +466,15 @@ def about_process(request):
                 if current_process_update_entry is not None:
                     if current_process_update_entry.status=="On Going":
                         result = "stop"
-                        # lock_status = "unlocked"
+                        lock_status = "unlocked"
                         status="On Going"
                     elif current_process_update_entry.status=="Completed":
                         result = "start"
-                        # lock_status = "unlocked"
+                        lock_status = "unlocked"
                         status = "Completed"
                     else:
                         result = "start"
-                        # lock_status = "unlocked"
+                        lock_status = "unlocked"
                         status = "Not Started"
                 else:
                     result = "start"
