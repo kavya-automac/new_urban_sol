@@ -77,7 +77,7 @@ class process_update(models.Model):
     # process_id=models.ForeignKey(Groups,on_delete=models.CASCADE)
     start_date=models.DateField(default=date.today)
     end_date=models.DateField(default=date.today)
-    timer=models.TimeField(default=time(0,0,0))
+    timer=models.CharField(max_length=500,blank=True,null=True)
     start_time=models.TimeField(default=time(0,0,0))
     issues=models.TextField(null=True,blank=True)
     status_choices=(("Completed","Completed"),("On Going","On Going"),("Not Started","Not Started"),("Issue Raised","Issue Raised"))
@@ -136,6 +136,15 @@ class manufacture_list_update(models.Model):
 
     def __str__(self):
         return "%s %s %s" % (self.manufacturing_id,  self.model_id, self.status)
+
+
+class testing_durationfield(models.Model):
+    objects = models.Manager()
+
+    timer=models.DurationField()
+
+    def __str__(self):
+        return str(self.timer)
 
 
 

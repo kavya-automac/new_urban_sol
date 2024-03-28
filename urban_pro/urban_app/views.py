@@ -254,19 +254,20 @@ def start_stop_process(request):
         f_time= request.data.get('timer')
         f_start_time=request.data.get('start_time')
 
-        #
+
         # hours, minutes, seconds = map(int, f_time.split(':'))
-        #
-        # # Create a timedelta object
-        # # timer = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        # # total_seconds = hours * 3600 + minutes * 60 + seconds
-        # # timer = timedelta(seconds=total_seconds)
-        #
-        # # Create a timedelta object
-        # timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
-        #
-        # print('timer',timer)
-        # print('timer type',type(timer))
+
+        # Create a timedelta object
+        # timer = timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        # total_seconds = hours * 3600 + minutes * 60 + seconds
+        # timer = timedelta(seconds=total_seconds)
+
+        # Create a timedelta object
+        # d_timer = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+        # timer = f"{hours}:{minutes}:{seconds}"
+
+        print('timer',f_time)
+        print('timer type',type(f_time))
 
         r = request.data
         print('rrrrrrrrrrr', len(r), r)
@@ -277,6 +278,11 @@ def start_stop_process(request):
         except process_update.DoesNotExist:
             update_table_query = None
             print('no data in db')
+        # tt = parse_duration(timer)
+        # print('ttttttttt', tt)
+        # dd = f"{tt.seconds // 3600:02d}:{tt.seconds % 3600 // 60:02d}:{tt.seconds % 60:02d}"
+        # print('dddd', dd)
+        # print('dddd type', type(dd))
 
         # print(update_table_query)
         # frontend_stop_data = {"manufacture_id__manufacture_No": request.data.get('m_id'),
@@ -293,7 +299,9 @@ def start_stop_process(request):
             # manufacture_instance = Manufacture.objects.get(manufacture_No=f_manufacture_id)
             process_instance = Process_Details.objects.get(pk=f_process_id)#Process_Details to Groups
             # print('/////', manufacture_instance, process_instance)
-            # timer=timedelta(hours=20,minutes=30,seconds=10)
+            # timer=timedelta(90)
+
+
             start_new_record = process_update(manufacture_id=f_manufacture_id, process_id=process_instance,
                                               start_date=f_start_date, end_date="1111-11-11", timer=f_time,
                                               start_time=f_start_time,issues="", status=f_process_status)
